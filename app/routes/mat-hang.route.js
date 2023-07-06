@@ -5,7 +5,7 @@ module.exports = (app) => {
   var router = require("express").Router();
 
   router.get("/", matHangController.findAll);
-  router.post("/", matHangController.create);
+  router.post("/", roleRequireAdmin, matHangController.create);
 
   app.use("/api/mat-hang", router);
 };

@@ -4,10 +4,11 @@ const roleRequireCustomer = (req, res, next) => {
   const token = req.header("auth-token");
   jwt.verify(token, process.env.JWT_PRIVATE_KEY, (err, user) => {
     if (err) {
-      res.status(403).json({ msg: "Forbidden" });
+      res.status(403).json({ message: "Tài khoản không có quyền truy cập" });
     } else {
       req.user = user;
-      if (req.user.role_id != 2) res.status(403).json({ msg: "Forbidden" });
+      if (req.user.role_id != 2)
+        res.status(403).json({ message: "Tài khoản không có quyền truy cập" });
       next();
     }
   });
@@ -17,11 +18,11 @@ const roleRequireAdmin = (req, res, next) => {
   const token = req.header("auth-token");
   jwt.verify(token, process.env.JWT_PRIVATE_KEY, (err, user) => {
     if (err) {
-      res.status(403).json({ msg: "Forbidden" });
+      res.status(403).json({ message: "Tài khoản không có quyền truy cập" });
     } else {
       req.user = user;
       if (req.user.role_id != 1)
-        res.status(403).json({ msg: "Forbidden role" });
+        res.status(403).json({ message: "Tài khoản không có quyền truy cập" });
       next();
     }
   });
@@ -31,7 +32,7 @@ const roleRequire = (req, res, next) => {
   const token = req.header("auth-token");
   jwt.verify(token, process.env.JWT_PRIVATE_KEY, (err, user) => {
     if (err) {
-      res.status(403).json({ msg: "Forbidden" });
+      res.status(403).json({ message: "Forbidden" });
     } else {
       req.user = user;
       next();
