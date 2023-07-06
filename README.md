@@ -1,4 +1,4 @@
-# Node.js CRUD example with SQL Server (MSSQL) - Express Rest APIs and Sequelize
+# Node.js CRUD with SQL Server (MSSQL) - Express Rest APIs and Sequelize for BaloShopApi
 
 For more detail, please visit:
 > [Node.js CRUD example with SQL Server (MSSQL)](https://www.bezkoder.com/node-js-sql-server-crud/)
@@ -49,4 +49,4 @@ npm install
 ```
 node server.js
 ```
-"# bagshop-api" 
+"# BaloShopApi" 
