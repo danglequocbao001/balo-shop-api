@@ -18,6 +18,12 @@ module.exports = (sequelize, Sequelize) => {
       mo_ta: {
         type: Sequelize.STRING,
       },
+      so_luong: {
+        type: Sequelize.INTEGER,
+      },
+      gia: {
+        type: Sequelize.FLOAT,
+      },
       ma_loai_mh: {
         type: Sequelize.STRING,
       },

@@ -14,17 +14,26 @@ exports.findAll = (req, res) => {
     });
 };
 
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
   if (!req.body) {
     res.status(400).send({
       message: "Content can not be empty!",
     });
   }
 
-  let checkMatHang = MatHang.findOne({ where: { ma_mh: req.body.ma_mh } });
-  if (checkMatHang) {
+  let checkMaMH = await MatHang.findOne({ where: { ma_mh: req.body.ma_mh } });
+  let checkTenMH = await MatHang.findOne({
+    where: { ten_mh: req.body.ten_mh },
+  });
+
+  if (checkMaMH) {
     res.status(400).send({
-      message: "Balo already exists!",
+      message: "Mã mặt hàng đã tồn tại",
+    });
+    return;
+  } else if (checkTenMH) {
+    res.status(400).send({
+      message: "Tên mặt hàng đã tồn tại",
     });
     return;
   }
@@ -40,7 +49,7 @@ exports.create = (req, res) => {
     so_luong: req.body.so_luong,
   };
 
-  Bags.create(bag)
+  MatHang.create(matHang)
     .then((data) => {
       res.status(200).send(data);
     })
@@ -52,44 +61,44 @@ exports.create = (req, res) => {
 };
 
 exports.update = async (req, res) => {
-  const bag_id = req.params.id;
-  const { bag_name, category_id, brand_id } = req.body;
+  // const ma_mh = req.params.ma_mh;
+  // const { bag_name, category_id, brand_id } = req.body;
 
-  let checkBagId = await Bags.findOne({ where: { bag_id: bag_id } });
-  if (!checkBagId) {
-    res.status(400).send({
-      message: "Bag not exists!",
-    });
-    return;
-  }
+  // let checkBagId = await Bags.findOne({ where: { bag_id: bag_id } });
+  // if (!checkBagId) {
+  //   res.status(400).send({
+  //     message: "Bag not exists!",
+  //   });
+  //   return;
+  // }
 
-  let checkBag = await Bags.findOne({
-    where: { bag_name: bag_name, bag_id: { [Op.ne]: bag_id } },
-  });
-  if (checkBag) {
-    res.status(400).send({
-      message: "Bag already exists!",
-    });
-    return;
-  }
+  // let checkBag = await Bags.findOne({
+  //   where: { bag_name: bag_name, bag_id: { [Op.ne]: bag_id } },
+  // });
+  // if (checkBag) {
+  //   res.status(400).send({
+  //     message: "Bag already exists!",
+  //   });
+  //   return;
+  // }
 
-  const bag = {
-    bag_name: bag_name,
-    category_id: category_id,
-    brand_id: brand_id,
-  };
+  // const bag = {
+  //   bag_name: bag_name,
+  //   category_id: category_id,
+  //   brand_id: brand_id,
+  // };
 
-  Bags.update(bag, { where: { bag_id: bag_id } })
-    .then((num) => {
-      if (num == 1) {
-        res.status(200).send({
-          message: "Bag updated successfully!",
-        });
-      } else {
-        res.status(400).send({
-          message: `Cannot update bag with id=${bag_id}. Maybe bag was not found or req.body is empty!`,
-        });
-      }
-    })
-    .catch((err) => res.status(500).json(err));
+  // Bags.update(bag, { where: { bag_id: bag_id } })
+  //   .then((num) => {
+  //     if (num == 1) {
+  //       res.status(200).send({
+  //         message: "Bag updated successfully!",
+  //       });
+  //     } else {
+  //       res.status(400).send({
+  //         message: `Cannot update bag with id=${bag_id}. Maybe bag was not found or req.body is empty!`,
+  //       });
+  //     }
+  //   })
+  //   .catch((err) => res.status(500).json(err));
 };

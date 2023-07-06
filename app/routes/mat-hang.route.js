@@ -1,10 +1,11 @@
 const { roleRequireAdmin } = require("../helper/roleRequired");
 
 module.exports = (app) => {
-  const matHang = require("../controllers/mat-hang.controller");
+  const matHangController = require("../controllers/mat-hang.controller");
   var router = require("express").Router();
 
-  router.get("/", matHang.findAll);
+  router.get("/", matHangController.findAll);
+  router.post("/", matHangController.create);
 
   app.use("/api/mat-hang", router);
 };
