@@ -5,8 +5,8 @@ module.exports = (app) => {
   var router = require("express").Router();
 
   router.get("/", quangCaoController.findAll);
-  router.post("/", quangCaoController.create);
-  router.delete("/:ma_qc", quangCaoController.delete);
+  router.post("/", roleRequireAdmin, quangCaoController.create);
+  router.delete("/:ma_qc", roleRequireAdmin, quangCaoController.delete);
 
   app.use("/api/quang-cao", router);
 };

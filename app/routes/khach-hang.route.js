@@ -4,7 +4,7 @@ module.exports = (app) => {
   const khachHangController = require("../controllers/khach-hang.controller");
   var router = require("express").Router();
 
-  router.get("/", khachHangController.findAll);
+  router.get("/", roleRequireAdmin, khachHangController.findAll);
   router.post("/", khachHangController.create);
 
   app.use("/api/khach-hang", router);

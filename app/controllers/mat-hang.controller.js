@@ -2,7 +2,7 @@ const db = require("../models");
 const MatHang = db.MatHang;
 const Op = db.Sequelize.Op;
 
-exports.findAll = (req, res) => {
+exports.findAll = (res) => {
   MatHang.findAll()
     .then((data) => {
       res.status(200).send(data);
@@ -63,7 +63,6 @@ exports.create = async (req, res) => {
 exports.update = async (req, res) => {
   // const ma_mh = req.params.ma_mh;
   // const { bag_name, category_id, brand_id } = req.body;
-
   // let checkBagId = await Bags.findOne({ where: { bag_id: bag_id } });
   // if (!checkBagId) {
   //   res.status(400).send({
@@ -71,7 +70,6 @@ exports.update = async (req, res) => {
   //   });
   //   return;
   // }
-
   // let checkBag = await Bags.findOne({
   //   where: { bag_name: bag_name, bag_id: { [Op.ne]: bag_id } },
   // });
@@ -81,13 +79,11 @@ exports.update = async (req, res) => {
   //   });
   //   return;
   // }
-
   // const bag = {
   //   bag_name: bag_name,
   //   category_id: category_id,
   //   brand_id: brand_id,
   // };
-
   // Bags.update(bag, { where: { bag_id: bag_id } })
   //   .then((num) => {
   //     if (num == 1) {

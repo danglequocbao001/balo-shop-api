@@ -2,7 +2,7 @@ const db = require("../models");
 const QuangCao = db.QuangCao;
 const Op = db.Sequelize.Op;
 
-exports.findAll = (req, res) => {
+exports.findAll = (res) => {
   QuangCao.findAll()
     .then((data) => {
       res.status(200).send(data);
