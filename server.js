@@ -37,6 +37,7 @@ require("./app/routes/mat-hang.route")(app);
 require("./app/routes/loai-mat-hang.route")(app);
 require("./app/routes/nhan-vien.route")(app);
 require("./app/routes/khach-hang.route")(app);
+require("./app/routes/quang-cao.route")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 5000;

@@ -5,7 +5,7 @@ module.exports = (app) => {
   var router = require("express").Router();
 
   router.get("/", nhanVien.findAll);
-  router.post("/", nhanVien.create)
+  router.post("/", nhanVien.create);
 
   app.use("/api/nhan-vien", router);
 };
