@@ -40,6 +40,7 @@ require("./app/routes/khach-hang.route")(app);
 require("./app/routes/quang-cao.route")(app);
 require("./app/routes/don-dat-hang.route")(app);
 require("./app/routes/trang-thai-ddh.route")(app);
+require("./app/routes/nha-cung-cap.route")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 5000;

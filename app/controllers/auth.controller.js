@@ -62,26 +62,33 @@ exports.signupCustomer = async (req, res) => {
     return;
   }
 
-  let checkEmailKh = await KhachHang.findOne({ where: { email_kh: email_kh } });
-  let checkEmailKhInEmailNv = await NhanVien.findOne({
+  const checkEmailKh = await KhachHang.findOne({
+    where: { email_kh: email_kh },
+  });
+  const checkEmailKhInEmailNv = await NhanVien.findOne({
     where: { email_nv: email_kh },
   });
-  if (checkEmailKh || checkEmailKhInEmailNv) {
-    res.status(401).json({ message: "Email đã tồn tại" });
-    return;
-  }
-
-  let checkSdtKh = await KhachHang.findOne({
+  const checkSdtKh = await KhachHang.findOne({
     where: { sdt: sdt },
   });
-  if (checkSdtKh) {
-    res.status(401).json({ message: "Phone number already used" });
+  const checkSoIdKh = await KhachHang.findOne({
+    where: { so_id: so_id },
+  });
+
+  if (checkEmailKh || checkEmailKhInEmailNv) {
+    res.status(400).json({ message: `Email ${email_kh} đã tồn tại` });
+    return;
+  } else if (checkSdtKh) {
+    res.status(400).json({ message: `Số điện thoại ${sdt} đã tồn tại` });
+    return;
+  } else if (so_id !== null && checkSoIdKh) {
+    res.status(400).json({ message: `CMND/CCCD/Id ${so_id} đã tồn tại"` });
     return;
   }
 
-  const newAccount = { ...req.body };
+  const khachHang = { ...req.body };
 
-  KhachHang.create(newAccount)
+  KhachHang.create(khachHang)
     .then((data) => {
       res.status(200).send(data);
     })
