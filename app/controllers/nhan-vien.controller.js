@@ -2,7 +2,7 @@ const db = require("../models");
 const NhanVien = db.nhanvien;
 const Op = db.Sequelize.Op;
 
-exports.findAll = (res) => {
+exports.findAll = (req, res) => {
   NhanVien.findAll()
     .then((data) => {
       res.status(200).send(data);

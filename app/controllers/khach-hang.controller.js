@@ -2,7 +2,7 @@ const db = require("../models");
 const KhachHang = db.khachhang;
 const Op = db.Sequelize.Op;
 
-exports.findAll = (res) => {
+exports.findAll = (req, res) => {
   KhachHang.findAll()
     .then((data) => {
       res.status(200).send(data);

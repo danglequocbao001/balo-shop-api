@@ -1,9 +1,9 @@
 const db = require("../models");
-const LoaiMatHang = db.LoaiMatHang;
+const TrangThaiDDH = db.TrangThaiDDH;
 const Op = db.Sequelize.Op;
 
 exports.findAll = (req, res) => {
-  LoaiMatHang.findAll()
+  TrangThaiDDH.findAll()
     .then((data) => {
       res.status(200).send(data);
     })
