@@ -25,6 +25,7 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
   const ma_mh = req.params.ma_mh;
   MatHang.findOne({
+    where: { ma_mh: ma_mh },
     include: [
       {
         model: LoaiMatHang,
