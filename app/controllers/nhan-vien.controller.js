@@ -1,9 +1,45 @@
 const db = require("../models");
-const NhanVien = db.nhanvien;
-const Op = db.Sequelize.Op;
+const NhanVien = db.NhanVien;
 
 exports.findAll = (req, res) => {
   NhanVien.findAll()
+    .then((data) => {
+      res.status(200).send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err,
+      });
+    });
+};
+
+exports.findMe = (req, res) => {
+  if (req.headers && req.headers.authorization) {
+    const staffToken = req.headers.authorization;
+    const token = staffToken.split(" ");
+    const decoded = jwt.verify(token[0], JWT_PRIVATE_KEY);
+    const ma_nv = decoded.ma_nv;
+
+    NhanVien.findOne({ ma_nv: ma_nv })
+      .then((data) => {
+        const response = { ...data.dataValues, ...decoded };
+        res.status(200).send(response);
+      })
+      .catch((err) => {
+        res.status(500).send({
+          message: err,
+        });
+      });
+  } else {
+    return res.status(401).send({ message: "Unauthorized" });
+  }
+};
+
+exports.findOne = (req, res) => {
+  const ma_nv = req.params.ma_nv;
+  NhanVien.findOne({
+    where: { ma_nv: ma_nv },
+  })
     .then((data) => {
       res.status(200).send(data);
     })
