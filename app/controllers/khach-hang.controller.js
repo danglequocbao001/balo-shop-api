@@ -39,6 +39,21 @@ exports.findMe = (req, res) => {
   }
 };
 
+exports.findOne = (req, res) => {
+  const ma_kh = req.params.ma_kh;
+  KhachHang.findOne({
+    where: { ma_kh: ma_kh },
+  })
+    .then((data) => {
+      res.status(200).send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err,
+      });
+    });
+};
+
 // exports.updateByUser = async (req, res) => {
 //   if (!req.user) {
 //     res.status(400).send({
