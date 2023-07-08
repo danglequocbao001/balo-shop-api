@@ -17,7 +17,7 @@ exports.loginStaff = async (req, res) => {
     res.status(401).json({ message: "Sai mật khẩu" });
     return;
   }
-  const accessToken = jwt.sign(
+  const authorization = jwt.sign(
     {
       ma_nv: nhanvien.ma_nv,
       email_nv: nhanvien.email_nv,
@@ -26,7 +26,7 @@ exports.loginStaff = async (req, res) => {
     process.env.JWT_PRIVATE_KEY,
     { expiresIn: "72h" }
   );
-  res.status(200).json({ access_token: accessToken });
+  res.status(200).json({ authorization: authorization });
 };
 
 exports.loginCustomer = async (req, res) => {
@@ -42,7 +42,7 @@ exports.loginCustomer = async (req, res) => {
     res.status(401).json({ message: "Sai mật khẩu" });
     return;
   }
-  const accessToken = jwt.sign(
+  const authorization = jwt.sign(
     {
       ma_kh: khachhang.ma_kh,
       email_kh: khachhang.email_kh,
@@ -51,7 +51,7 @@ exports.loginCustomer = async (req, res) => {
     process.env.JWT_PRIVATE_KEY,
     { expiresIn: "72h" }
   );
-  res.status(200).json({ access_token: accessToken });
+  res.status(200).json({ authorization: authorization });
 };
 
 exports.signupCustomer = async (req, res) => {
