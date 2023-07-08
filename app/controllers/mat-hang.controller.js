@@ -1,9 +1,37 @@
 const db = require("../models");
 const MatHang = db.MatHang;
+const LoaiMatHang = db.LoaiMatHang;
 const Op = db.Sequelize.Op;
 
 exports.findAll = (req, res) => {
-  MatHang.findAll()
+  MatHang.findAll({
+    include: [
+      {
+        model: LoaiMatHang,
+        attributes: ["ten_loai_mh"],
+      },
+    ],
+  })
+    .then((data) => {
+      res.status(200).send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err,
+      });
+    });
+};
+
+exports.findOne = (req, res) => {
+  const ma_mh = req.params.ma_mh;
+  MatHang.findOne({
+    include: [
+      {
+        model: LoaiMatHang,
+        attributes: ["ten_loai_mh"],
+      },
+    ],
+  })
     .then((data) => {
       res.status(200).send(data);
     })

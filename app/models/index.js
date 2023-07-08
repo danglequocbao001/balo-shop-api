@@ -31,6 +31,7 @@ db.NhaCungCap = require("./nha-cung-cap.model.js")(sequelize, Sequelize);
 //foreign keys mat_hang(ma_loai_mh)
 db.LoaiMatHang.hasMany(db.MatHang, { foreignKey: "ma_loai_mh" });
 db.MatHang.belongsTo(db.LoaiMatHang, { foreignKey: "ma_loai_mh" });
+// db.MatHang.hasOne(db.LoaiMatHang, { foreignKey: "ma_loai_mh" });
 
 //foreign keys quang_cao(ma_nv)
 db.NhanVien.hasMany(db.QuangCao, { foreignKey: "ma_nv" });

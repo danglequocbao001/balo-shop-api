@@ -1,3 +1,5 @@
+const { LoaiMatHang } = require(".");
+
 module.exports = (sequelize, Sequelize) => {
   const MatHang = sequelize.define(
     "mat_hang",
@@ -26,6 +28,10 @@ module.exports = (sequelize, Sequelize) => {
       },
       ma_loai_mh: {
         type: Sequelize.STRING,
+        references: {
+          model: LoaiMatHang,
+          key: "ma_loai_mh",
+        },
       },
     },
     {
