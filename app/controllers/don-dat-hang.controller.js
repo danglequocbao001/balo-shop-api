@@ -8,7 +8,6 @@ exports.findAll = (req, res) => {
       res.status(500).send({
         message: err,
       });
-      console.log(err);
     });
 };
 

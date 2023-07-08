@@ -21,7 +21,6 @@ exports.findMe = (req, res) => {
     const customerToken = req.headers.authorization;
     const token = customerToken.split(" ");
     const decoded = jwt.verify(token[0], JWT_PRIVATE_KEY);
-    console.log(decoded);
     const ma_kh = decoded.ma_kh;
 
     KhachHang.findOne({ ma_kh: ma_kh })
