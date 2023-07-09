@@ -1,6 +1,5 @@
 const db = require("../models");
 const TrangThaiDDH = db.TrangThaiDDH;
-const Op = db.Sequelize.Op;
 
 exports.findAll = (req, res) => {
   TrangThaiDDH.findAll()
