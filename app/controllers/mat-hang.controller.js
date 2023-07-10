@@ -54,7 +54,7 @@ exports.findOne = (req, res) => {
 
 exports.findNews = (req, res) => {
   MatHang.findAll({
-    where: { is_new: false },
+    where: { is_new: true },
     include: [
       {
         model: LoaiMatHang,
