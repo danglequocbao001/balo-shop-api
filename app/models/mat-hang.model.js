@@ -26,6 +26,9 @@ module.exports = (sequelize, Sequelize) => {
       gia: {
         type: Sequelize.FLOAT,
       },
+      is_new: {
+        type: Sequelize.INTEGER,
+      },
       ma_loai_mh: {
         type: Sequelize.STRING,
         references: {

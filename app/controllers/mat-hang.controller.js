@@ -43,6 +43,26 @@ exports.findOne = (req, res) => {
     });
 };
 
+exports.findNew = (req, res) => {
+  MatHang.findAll({
+    where: { is_new: false },
+    include: [
+      {
+        model: LoaiMatHang,
+        attributes: ["ten_loai_mh"],
+      },
+    ],
+  })
+    .then((data) => {
+      res.status(200).send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err,
+      });
+    });
+};
+
 exports.create = async (req, res) => {
   if (!req.body) {
     res.status(400).send({
