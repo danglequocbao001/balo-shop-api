@@ -1,7 +1,16 @@
+// I have 3 databases table are:
+// -  Table staff with columns: staff_id, staff_email
+// - Table products with columns: product_id, product_name
+// - Table promotion with columns: promotion_id, promotion_name, start_date, end_date and foreign key staff_id
+// - Table promotion details with columns: foreign key promotion_id, foreign key product_id, promotion_percentage
+// Write for me a microsoft sql server store procedure that show all the products is under promotion with this condition:
+// - Show all products are under promotion
+
 const db = require("../models");
 const MatHang = db.MatHang;
 const LoaiMatHang = db.LoaiMatHang;
 const Op = db.Sequelize.Op;
+const sequelizeManual = require("../helper/sequelize");
 
 exports.findAll = (req, res) => {
   MatHang.findAll({
@@ -43,7 +52,7 @@ exports.findOne = (req, res) => {
     });
 };
 
-exports.findNew = (req, res) => {
+exports.findNews = (req, res) => {
   MatHang.findAll({
     where: { is_new: false },
     include: [
@@ -55,6 +64,19 @@ exports.findNew = (req, res) => {
   })
     .then((data) => {
       res.status(200).send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err,
+      });
+    });
+};
+
+exports.findPromotions = (req, res) => {
+  sequelizeManual
+    .query("EXEC LayDanhSachSanPhamDangDuocKhuyenMai")
+    .then((data) => {
+      res.status(200).send(data[0]);
     })
     .catch((err) => {
       res.status(500).send({
