@@ -29,7 +29,7 @@ db.sequelize.sync();
 
 // simple route
 app.get("/", (req, res) => {
-  res.json({ message: "Welcome to the application." });
+  res.json({ message: "Welcome to the ecom api shop application." });
 });
 
 require("./app/routes/auth.route")(app);
@@ -44,6 +44,4 @@ require("./app/routes/nha-cung-cap.route")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}.`);
-});
+app.listen(PORT);

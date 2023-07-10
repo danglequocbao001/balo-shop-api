@@ -41,7 +41,13 @@ exports.findOne = (req, res) => {
     where: { ma_nv: ma_nv },
   })
     .then((data) => {
-      res.status(200).send(data);
+      if (data === null) {
+        res
+          .status(400)
+          .send({ message: `Không tìm thấy nhân viên có mã '${ma_nv}'` });
+      } else {
+        res.status(200).send(data);
+      }
     })
     .catch((err) => {
       res.status(500).send({

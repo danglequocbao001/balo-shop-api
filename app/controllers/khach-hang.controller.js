@@ -44,7 +44,13 @@ exports.findOne = (req, res) => {
     where: { ma_kh: ma_kh },
   })
     .then((data) => {
-      res.status(200).send(data);
+      if (data === null) {
+        res
+          .status(400)
+          .send({ message: `Không tìm thấy khách hàng có mã '${ma_kh}'` });
+      } else {
+        res.status(200).send(data);
+      }
     })
     .catch((err) => {
       res.status(500).send({
