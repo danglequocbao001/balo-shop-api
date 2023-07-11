@@ -76,6 +76,22 @@ exports.findPromotions = (req, res) => {
   sequelizeManual
     .query("EXEC LayDanhSachSanPhamDangDuocKhuyenMai")
     .then((data) => {
+      data[0].map((product) => {
+        product.loai_mat_hang = {
+          ten_loai_mh: product.ten_loai_mh,
+        };
+        product.khuyen_mai = {
+          ma_km: product.ma_km,
+          ngay_bd: product.ngay_bd,
+          ngay_kt: product.ngay_kt,
+          phan_tram_giam_gia: product.phan_tram_giam_gia,
+        };
+        delete product.ten_loai_mh;
+        delete product.ma_km;
+        delete product.ngay_bd;
+        delete product.ngay_kt;
+        delete product.phan_tram_giam_gia;
+      });
       res.status(200).send(data[0]);
     })
     .catch((err) => {
