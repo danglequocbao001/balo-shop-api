@@ -11,6 +11,10 @@ const MatHang = db.MatHang;
 const LoaiMatHang = db.LoaiMatHang;
 const Op = db.Sequelize.Op;
 const sequelizeManual = require("../helper/sequelize");
+const {
+  mergeNewAndPromotionProduct,
+  formatFindPromotions,
+} = require("../helper/mat-hang.helper");
 
 exports.findAll = (req, res) => {
   MatHang.findAll({
@@ -61,11 +65,20 @@ exports.findNews = (req, res) => {
         attributes: ["ten_loai_mh"],
       },
     ],
+    raw: true,
   })
-    .then((data) => {
-      res.status(200).send(data);
+    .then(async (newProducts) => {
+      const promotionProducts = await sequelizeManual.query(
+        "EXEC LayDanhSachSanPhamDangDuocKhuyenMai"
+      );
+      const resultProducts = await mergeNewAndPromotionProduct(
+        newProducts,
+        promotionProducts
+      );
+      res.status(200).send(resultProducts);
     })
     .catch((err) => {
+      console.log(err);
       res.status(500).send({
         message: err,
       });
@@ -75,26 +88,9 @@ exports.findNews = (req, res) => {
 exports.findPromotions = (req, res) => {
   sequelizeManual
     .query("EXEC LayDanhSachSanPhamDangDuocKhuyenMai")
-    .then((data) => {
-      data[0].map((product) => {
-        product.loai_mat_hang = {
-          ten_loai_mh: product.ten_loai_mh,
-        };
-        product.khuyen_mai = {
-          ma_km: product.ma_km,
-          ngay_bd: product.ngay_bd,
-          ngay_kt: product.ngay_kt,
-          phan_tram_giam_gia: product.phan_tram_giam_gia,
-          gia_sau_khi_giam:
-            product.gia * ((100 - product.phan_tram_giam_gia) / 100),
-        };
-        delete product.ten_loai_mh;
-        delete product.ma_km;
-        delete product.ngay_bd;
-        delete product.ngay_kt;
-        delete product.phan_tram_giam_gia;
-      });
-      res.status(200).send(data[0]);
+    .then(async (data) => {
+      const promotionProducts = await formatFindPromotions(data);
+      res.status(200).send(promotionProducts);
     })
     .catch((err) => {
       res.status(500).send({
