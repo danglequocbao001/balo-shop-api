@@ -43,10 +43,10 @@ exports.mergeNewAndPromotionProducts = async (
           product.gia *
           ((100 - matchingPromotionProduct.phan_tram_giam_gia) / 100),
       };
-      delete product["loai_mat_hang.ten_loai_mh"];
-
       return product;
     }
+
+    delete product["loai_mat_hang.ten_loai_mh"];
 
     return product;
   });
@@ -62,11 +62,11 @@ exports.mergeNewAndPromotionAndBestSellerProducts = async (
     );
     if (matchingNewPromotionProduct) {
       product.chi_tiet_da_ban = {
-        tong_so_da_ban:
-          matchingNewPromotionProduct.tong_so_da_ban,
+        tong_so_da_ban: matchingNewPromotionProduct.tong_so_da_ban,
       };
       return { ...product };
     }
+
     return product;
   });
 };
