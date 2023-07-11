@@ -9,11 +9,10 @@
 const db = require("../models");
 const MatHang = db.MatHang;
 const LoaiMatHang = db.LoaiMatHang;
-const Op = db.Sequelize.Op;
 const sequelizeManual = require("../helper/sequelize");
 const {
-  mergeNewAndPromotionProduct,
-  formatFindPromotions,
+  mergeNewAndPromotionProducts,
+  mergeNewAndPromotionAndBestSellerProducts,
 } = require("../helper/mat-hang.helper");
 
 exports.findAll = (req, res) => {
@@ -24,9 +23,26 @@ exports.findAll = (req, res) => {
         attributes: ["ten_loai_mh"],
       },
     ],
+    raw: true,
   })
-    .then((data) => {
-      res.status(200).send(data);
+    .then(async (newProducts) => {
+      const promotionProducts = await sequelizeManual.query(
+        "EXEC LayDanhSachSanPhamDangDuocKhuyenMai"
+      );
+      const bestSellerProducts = await sequelizeManual.query(
+        "EXEC LayDanhSachMatHangCungVoiTongSoLuongDaBan"
+      );
+
+      const resultNewAndPromotionProducts = await mergeNewAndPromotionProducts(
+        newProducts,
+        promotionProducts
+      );
+      const resultProducts = await mergeNewAndPromotionAndBestSellerProducts(
+        resultNewAndPromotionProducts,
+        bestSellerProducts
+      );
+
+      res.status(200).send(resultProducts);
     })
     .catch((err) => {
       res.status(500).send({
@@ -48,49 +64,6 @@ exports.findOne = (req, res) => {
   })
     .then((data) => {
       res.status(200).send(data);
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err,
-      });
-    });
-};
-
-exports.findNews = (req, res) => {
-  MatHang.findAll({
-    where: { is_new: true },
-    include: [
-      {
-        model: LoaiMatHang,
-        attributes: ["ten_loai_mh"],
-      },
-    ],
-    raw: true,
-  })
-    .then(async (newProducts) => {
-      const promotionProducts = await sequelizeManual.query(
-        "EXEC LayDanhSachSanPhamDangDuocKhuyenMai"
-      );
-      const resultProducts = await mergeNewAndPromotionProduct(
-        newProducts,
-        promotionProducts
-      );
-      res.status(200).send(resultProducts);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).send({
-        message: err,
-      });
-    });
-};
-
-exports.findPromotions = (req, res) => {
-  sequelizeManual
-    .query("EXEC LayDanhSachSanPhamDangDuocKhuyenMai")
-    .then(async (data) => {
-      const promotionProducts = await formatFindPromotions(data);
-      res.status(200).send(promotionProducts);
     })
     .catch((err) => {
       res.status(500).send({

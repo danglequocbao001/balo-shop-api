@@ -21,7 +21,7 @@ exports.formatFindPromotions = async (data) => {
   });
 };
 
-exports.mergeNewAndPromotionProduct = async (
+exports.mergeNewAndPromotionProducts = async (
   newProducts,
   promotionProducts
 ) => {
@@ -45,9 +45,28 @@ exports.mergeNewAndPromotionProduct = async (
       };
       delete product["loai_mat_hang.ten_loai_mh"];
 
-      return { ...product };
+      return product;
     }
 
+    return product;
+  });
+};
+
+exports.mergeNewAndPromotionAndBestSellerProducts = async (
+  newAndPromotionProducts,
+  bestSellerProducts
+) => {
+  return newAndPromotionProducts.map((product) => {
+    const matchingNewPromotionProduct = bestSellerProducts[0].find(
+      (bestSellerProduct) => bestSellerProduct.ma_mh === product.ma_mh
+    );
+    if (matchingNewPromotionProduct) {
+      product.chi_tiet_da_ban = {
+        tong_so_luong_ban_duoc:
+          matchingNewPromotionProduct.tong_so_luong_ban_duoc,
+      };
+      return { ...product };
+    }
     return product;
   });
 };
