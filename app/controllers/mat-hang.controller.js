@@ -85,6 +85,8 @@ exports.findPromotions = (req, res) => {
           ngay_bd: product.ngay_bd,
           ngay_kt: product.ngay_kt,
           phan_tram_giam_gia: product.phan_tram_giam_gia,
+          gia_sau_khi_giam:
+            product.gia * ((100 - product.phan_tram_giam_gia) / 100),
         };
         delete product.ten_loai_mh;
         delete product.ma_km;
