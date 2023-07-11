@@ -53,17 +53,37 @@ exports.findAll = (req, res) => {
 
 exports.findOne = (req, res) => {
   const ma_mh = req.params.ma_mh;
-  MatHang.findOne({
-    where: { ma_mh: ma_mh },
+  MatHang.findAll({
     include: [
       {
         model: LoaiMatHang,
         attributes: ["ten_loai_mh"],
       },
     ],
+    raw: true,
   })
-    .then((data) => {
-      res.status(200).send(data);
+    .then(async (newProducts) => {
+      const promotionProducts = await sequelizeManual.query(
+        "EXEC LayDanhSachSanPhamDangDuocKhuyenMai"
+      );
+      const bestSellerProducts = await sequelizeManual.query(
+        "EXEC LayDanhSachMatHangCungVoiTongSoLuongDaBan"
+      );
+
+      const resultNewAndPromotionProducts = await mergeNewAndPromotionProducts(
+        newProducts,
+        promotionProducts
+      );
+      const resultProducts = await mergeNewAndPromotionAndBestSellerProducts(
+        resultNewAndPromotionProducts,
+        bestSellerProducts
+      );
+
+      const resultProduct = resultProducts.filter(
+        (product) => product.ma_mh === ma_mh
+      );
+
+      res.status(200).send(resultProduct[0]);
     })
     .catch((err) => {
       res.status(500).send({

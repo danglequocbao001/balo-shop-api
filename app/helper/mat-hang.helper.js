@@ -46,8 +46,6 @@ exports.mergeNewAndPromotionProducts = async (
       return product;
     }
 
-    delete product["loai_mat_hang.ten_loai_mh"];
-
     return product;
   });
 };
@@ -57,6 +55,7 @@ exports.mergeNewAndPromotionAndBestSellerProducts = async (
   bestSellerProducts
 ) => {
   return newAndPromotionProducts.map((product) => {
+    delete product["loai_mat_hang.ten_loai_mh"];
     const matchingNewPromotionProduct = bestSellerProducts[0].find(
       (bestSellerProduct) => bestSellerProduct.ma_mh === product.ma_mh
     );
