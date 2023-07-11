@@ -62,8 +62,8 @@ exports.mergeNewAndPromotionAndBestSellerProducts = async (
     );
     if (matchingNewPromotionProduct) {
       product.chi_tiet_da_ban = {
-        tong_so_luong_ban_duoc:
-          matchingNewPromotionProduct.tong_so_luong_ban_duoc,
+        tong_so_da_ban:
+          matchingNewPromotionProduct.tong_so_da_ban,
       };
       return { ...product };
     }
