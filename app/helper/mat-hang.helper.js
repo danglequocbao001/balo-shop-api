@@ -1,3 +1,6 @@
+const sequelizeManual = require("./sequelize");
+
+//no in using
 exports.formatFindPromotions = async (data) => {
   return data[0].map((product) => {
     product.loai_mat_hang = {
@@ -9,7 +12,8 @@ exports.formatFindPromotions = async (data) => {
       ngay_kt: product.ngay_kt,
       phan_tram_giam_gia: product.phan_tram_giam_gia,
       gia_sau_khi_giam:
-        product.gia * ((100 - product.phan_tram_giam_gia) / 100),
+        product.thay_doi_gia.gia_dang_ap_dung *
+        ((100 - product.phan_tram_giam_gia) / 100),
     };
     delete product.ten_loai_mh;
     delete product.ma_km;
@@ -21,11 +25,28 @@ exports.formatFindPromotions = async (data) => {
   });
 };
 
-exports.mergeNewAndPromotionProducts = async (
-  newProducts,
-  promotionProducts
+const mergeCurrentPriceAndAllProducts = async (
+  allProducts,
+  currentApplyPrices
 ) => {
-  return newProducts.map((product) => {
+  allProducts.map((product) => {
+    const matchingAllProduct = currentApplyPrices[0].find(
+      (currentApplyPrice) => currentApplyPrice.ma_mh === product.ma_mh
+    );
+    if (matchingAllProduct) {
+      product.thay_doi_gia = {
+        ...matchingAllProduct,
+      };
+      return product;
+    }
+
+    return product;
+  });
+  return allProducts;
+};
+
+const mergeAllAndPromotionProducts = async (allProducts, promotionProducts) => {
+  return allProducts.map((product) => {
     product.loai_mat_hang = {
       ten_loai_mh: product["loai_mat_hang.ten_loai_mh"],
     };
@@ -40,7 +61,7 @@ exports.mergeNewAndPromotionProducts = async (
         ngay_kt: matchingPromotionProduct.ngay_kt,
         phan_tram_giam_gia: matchingPromotionProduct.phan_tram_giam_gia,
         gia_sau_khi_giam:
-          product.gia *
+          product.thay_doi_gia.gia_dang_ap_dung *
           ((100 - matchingPromotionProduct.phan_tram_giam_gia) / 100),
       };
       return product;
@@ -50,22 +71,49 @@ exports.mergeNewAndPromotionProducts = async (
   });
 };
 
-exports.mergeNewAndPromotionAndBestSellerProducts = async (
-  newAndPromotionProducts,
+const mergeAllAndPromotionAndBestSellerProducts = async (
+  allAndPromotionProducts,
   bestSellerProducts
 ) => {
-  return newAndPromotionProducts.map((product) => {
+  return allAndPromotionProducts.map((product) => {
     delete product["loai_mat_hang.ten_loai_mh"];
-    const matchingNewPromotionProduct = bestSellerProducts[0].find(
+    const matchingAllPromotionProduct = bestSellerProducts[0].find(
       (bestSellerProduct) => bestSellerProduct.ma_mh === product.ma_mh
     );
-    if (matchingNewPromotionProduct) {
+    if (matchingAllPromotionProduct) {
       product.chi_tiet_da_ban = {
-        tong_so_da_ban: matchingNewPromotionProduct.tong_so_da_ban,
+        tong_so_da_ban: matchingAllPromotionProduct.tong_so_da_ban,
       };
-      return { ...product };
+      return product;
     }
 
     return product;
   });
+};
+
+exports.resultMergedProducts = async (allProducts) => {
+  const currentApplyPrices = await sequelizeManual.query(
+    "SELECT * FROM view_gia_dang_ap_dung"
+  );
+  const promotionProducts = await sequelizeManual.query(
+    "EXEC sp_lay_danh_sach_san_pham_dang_duoc_khuyen_mai"
+  );
+  const bestSellerProducts = await sequelizeManual.query(
+    "EXEC sp_lay_danh_sach_mat_hang_cung_voi_tong_so_luong_da_ban"
+  );
+
+  const resultCurrentApplyPriceAndAllProducts =
+    await mergeCurrentPriceAndAllProducts(allProducts, currentApplyPrices);
+
+  const resultCurrentPriceAllAndPromotionProducts =
+    await mergeAllAndPromotionProducts(
+      resultCurrentApplyPriceAndAllProducts,
+      promotionProducts
+    );
+  const resultProducts = await mergeAllAndPromotionAndBestSellerProducts(
+    resultCurrentPriceAllAndPromotionProducts,
+    bestSellerProducts
+  );
+
+  return resultProducts;
 };

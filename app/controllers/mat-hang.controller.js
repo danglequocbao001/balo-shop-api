@@ -1,18 +1,8 @@
-// I have 3 databases table are:
-// -  Table staff with columns: staff_id, staff_email
-// - Table products with columns: product_id, product_name
-// - Table promotion with columns: promotion_id, promotion_name, start_date, end_date and foreign key staff_id
-// - Table promotion details with columns: foreign key promotion_id, foreign key product_id, promotion_percentage
-// Write for me a microsoft sql server store procedure that show all the products is under promotion with this condition:
-// - Show all products are under promotion
-
 const db = require("../models");
 const MatHang = db.MatHang;
 const LoaiMatHang = db.LoaiMatHang;
-const sequelizeManual = require("../helper/sequelize");
 const {
-  mergeNewAndPromotionProducts,
-  mergeNewAndPromotionAndBestSellerProducts,
+  resultMergedProducts,
 } = require("../helper/mat-hang.helper");
 
 exports.findAll = (req, res) => {
@@ -25,22 +15,8 @@ exports.findAll = (req, res) => {
     ],
     raw: true,
   })
-    .then(async (newProducts) => {
-      const promotionProducts = await sequelizeManual.query(
-        "EXEC LayDanhSachSanPhamDangDuocKhuyenMai"
-      );
-      const bestSellerProducts = await sequelizeManual.query(
-        "EXEC LayDanhSachMatHangCungVoiTongSoLuongDaBan"
-      );
-
-      const resultNewAndPromotionProducts = await mergeNewAndPromotionProducts(
-        newProducts,
-        promotionProducts
-      );
-      const resultProducts = await mergeNewAndPromotionAndBestSellerProducts(
-        resultNewAndPromotionProducts,
-        bestSellerProducts
-      );
+    .then(async (allProducts) => {
+      const resultProducts = await resultMergedProducts(allProducts);
 
       res.status(200).send(resultProducts);
     })
@@ -62,23 +38,8 @@ exports.findOne = (req, res) => {
     ],
     raw: true,
   })
-    .then(async (newProducts) => {
-      const promotionProducts = await sequelizeManual.query(
-        "EXEC LayDanhSachSanPhamDangDuocKhuyenMai"
-      );
-      const bestSellerProducts = await sequelizeManual.query(
-        "EXEC LayDanhSachMatHangCungVoiTongSoLuongDaBan"
-      );
-
-      const resultNewAndPromotionProducts = await mergeNewAndPromotionProducts(
-        newProducts,
-        promotionProducts
-      );
-      const resultProducts = await mergeNewAndPromotionAndBestSellerProducts(
-        resultNewAndPromotionProducts,
-        bestSellerProducts
-      );
-
+    .then(async (allProducts) => {
+      const resultProducts = await resultMergedProducts(allProducts);
       const resultProduct = resultProducts.filter(
         (product) => product.ma_mh === ma_mh
       );
