@@ -1,9 +1,7 @@
 const db = require("../models");
 const MatHang = db.MatHang;
 const LoaiMatHang = db.LoaiMatHang;
-const {
-  resultMergedProducts,
-} = require("../helper/mat-hang.helper");
+const { resultMergedProducts } = require("../helper/mat-hang.helper");
 
 exports.findAll = (req, res) => {
   MatHang.findAll({
@@ -40,11 +38,10 @@ exports.findOne = (req, res) => {
   })
     .then(async (allProducts) => {
       const resultProducts = await resultMergedProducts(allProducts);
-      const resultProduct = resultProducts.filter(
-        (product) => product.ma_mh === ma_mh
-      );
 
-      res.status(200).send(resultProduct[0]);
+      res
+        .status(200)
+        .send(resultProducts.filter((product) => product.ma_mh === ma_mh)[0]);
     })
     .catch((err) => {
       res.status(500).send({
