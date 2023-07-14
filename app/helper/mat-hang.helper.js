@@ -76,6 +76,7 @@ const mergeAllAndPromotionAndBestSellerProducts = async (
   bestSellerProducts
 ) => {
   return allAndPromotionProducts.map((product) => {
+    product.ten_loai_mh = product["loai_mat_hang.ten_loai_mh"];
     delete product["loai_mat_hang.ten_loai_mh"];
     const matchingAllPromotionProduct = bestSellerProducts[0].find(
       (bestSellerProduct) => bestSellerProduct.ma_mh === product.ma_mh
@@ -116,4 +117,36 @@ exports.resultMergedProducts = async (allProducts) => {
   );
 
   return resultProducts;
+};
+
+exports.searchProducts = async (allProducts, options) => {
+  return allProducts.filter((product) => {
+    let match = true;
+    for (const key in options) {
+      if (options[key] === undefined || options[key] === null) {
+        continue;
+      }
+      if (
+        typeof product[key] === "string" &&
+        !product[key].includes(options[key])
+      ) {
+        match = false;
+        break;
+      } else if (
+        typeof product[key] === "number" &&
+        product[key] !== options[key]
+      ) {
+        match = false;
+        break;
+      } else if (
+        typeof product[key] === "object" &&
+        product[key] !== null &&
+        !product[key].ten_loai_mh.includes(options[key])
+      ) {
+        match = false;
+        break;
+      }
+    }
+    return match;
+  });
 };

@@ -1,7 +1,10 @@
 const db = require("../models");
 const MatHang = db.MatHang;
 const LoaiMatHang = db.LoaiMatHang;
-const { resultMergedProducts } = require("../helper/mat-hang.helper");
+const {
+  resultMergedProducts,
+  searchProducts,
+} = require("../helper/mat-hang.helper");
 
 exports.findAll = (req, res) => {
   MatHang.findAll({
@@ -17,6 +20,39 @@ exports.findAll = (req, res) => {
       const resultProducts = await resultMergedProducts(allProducts);
 
       res.status(200).send(resultProducts);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err,
+      });
+    });
+};
+
+exports.search = (req, res) => {
+  const { ten_mh, nha_san_xuat, mo_ta, gia, ten_loai_mh } = req.body;
+  const options = {
+    ten_mh: ten_mh === undefined ? null : ten_mh,
+    nha_san_xuat: nha_san_xuat === undefined ? null : nha_san_xuat,
+    mo_ta: mo_ta === undefined ? null : mo_ta,
+    gia: gia === undefined ? null : gia,
+    ten_loai_mh: ten_loai_mh === undefined ? null : ten_loai_mh,
+  };
+
+  MatHang.findAll({
+    include: [
+      {
+        model: LoaiMatHang,
+        attributes: ["ten_loai_mh"],
+      },
+    ],
+    raw: true,
+  })
+    .then(async (allProducts) => {
+      const resultProducts = await resultMergedProducts(allProducts);
+
+      const resultSearched = await searchProducts(resultProducts, options);
+
+      res.status(200).send(resultSearched);
     })
     .catch((err) => {
       res.status(500).send({
