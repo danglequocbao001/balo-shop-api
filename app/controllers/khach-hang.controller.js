@@ -23,7 +23,9 @@ exports.findMe = (req, res) => {
     const decoded = jwt.verify(token[0], JWT_PRIVATE_KEY);
     const ma_kh = decoded.ma_kh;
 
-    KhachHang.findOne({ ma_kh: ma_kh })
+    KhachHang.findOne({
+      where: { ma_kh: ma_kh },
+    })
       .then((data) => {
         const response = { ...data.dataValues, ...decoded };
         res.status(200).send(response);
