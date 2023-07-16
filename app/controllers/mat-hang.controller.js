@@ -29,12 +29,13 @@ exports.findAll = (req, res) => {
 };
 
 exports.search = (req, res) => {
-  const { ten_mh, nha_san_xuat, mo_ta, gia, ten_loai_mh } = req.body;
+  const { ten_mh, nha_san_xuat, mo_ta, gia_min, gia_max, ten_loai_mh } = req.body;
   const options = {
     ten_mh: ten_mh === undefined ? null : ten_mh,
     nha_san_xuat: nha_san_xuat === undefined ? null : nha_san_xuat,
     mo_ta: mo_ta === undefined ? null : mo_ta,
-    gia: gia === undefined ? null : gia,
+    gia_min: gia_min === undefined ? 0 : gia_min,
+    gia_max: gia_max === undefined ? 9999999 : gia_max,
     ten_loai_mh: ten_loai_mh === undefined ? null : ten_loai_mh,
   };
 

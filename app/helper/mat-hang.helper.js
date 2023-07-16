@@ -145,6 +145,22 @@ exports.searchProducts = async (allProducts, options) => {
       ) {
         match = false;
         break;
+      } else if (
+        key === "gia_min" &&
+        (product.khuyen_mai
+          ? product.khuyen_mai.gia_sau_khi_giam
+          : product.thay_doi_gia.gia_dang_ap_dung) < options.gia_min
+      ) {
+        match = false;
+        break;
+      } else if (
+        key === "gia_max" &&
+        (product.khuyen_mai
+          ? product.khuyen_mai.gia_sau_khi_giam
+          : product.thay_doi_gia.gia_dang_ap_dung) > options.gia_max
+      ) {
+        match = false;
+        break;
       }
     }
     return match;
