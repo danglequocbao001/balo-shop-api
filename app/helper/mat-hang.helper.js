@@ -126,22 +126,26 @@ exports.searchProducts = async (allProducts, options) => {
       if (options[key] === undefined || options[key] === null) {
         continue;
       }
+      const optionValue = options[key];
+      const productValue = product[key];
       if (
-        typeof product[key] === "string" &&
-        !product[key].includes(options[key])
+        typeof productValue === "string" &&
+        !productValue.toLowerCase().includes(optionValue.toLowerCase())
       ) {
         match = false;
         break;
       } else if (
-        typeof product[key] === "number" &&
-        product[key] !== options[key]
+        typeof productValue === "number" &&
+        productValue !== Number(optionValue)
       ) {
         match = false;
         break;
       } else if (
-        typeof product[key] === "object" &&
-        product[key] !== null &&
-        !product[key].ten_loai_mh.includes(options[key])
+        typeof productValue === "object" &&
+        productValue !== null &&
+        !productValue.ten_loai_mh
+          .toLowerCase()
+          .includes(optionValue.toLowerCase())
       ) {
         match = false;
         break;
@@ -149,7 +153,7 @@ exports.searchProducts = async (allProducts, options) => {
         key === "gia_min" &&
         (product.khuyen_mai
           ? product.khuyen_mai.gia_sau_khi_giam
-          : product.thay_doi_gia.gia_dang_ap_dung) < options.gia_min
+          : product.thay_doi_gia.gia_dang_ap_dung) < Number(optionValue)
       ) {
         match = false;
         break;
@@ -157,7 +161,7 @@ exports.searchProducts = async (allProducts, options) => {
         key === "gia_max" &&
         (product.khuyen_mai
           ? product.khuyen_mai.gia_sau_khi_giam
-          : product.thay_doi_gia.gia_dang_ap_dung) > options.gia_max
+          : product.thay_doi_gia.gia_dang_ap_dung) > Number(optionValue)
       ) {
         match = false;
         break;
@@ -166,3 +170,53 @@ exports.searchProducts = async (allProducts, options) => {
     return match;
   });
 };
+
+// exports.searchProducts = async (allProducts, options) => {
+//   return allProducts.filter((product) => {
+//     let match = true;
+//     for (const key in options) {
+//       if (options[key] === undefined || options[key] === null) {
+//         continue;
+//       }
+//       if (
+//         typeof product[key] === "string" &&
+//         !product[key].toLowerCase().includes(options[key].toLowerCase())
+//       ) {
+//         match = false;
+//         break;
+//       } else if (
+//         typeof product[key] === "number" &&
+//         product[key] !== options[key]
+//       ) {
+//         match = false;
+//         break;
+//       } else if (
+//         typeof product[key] === "object" &&
+//         product[key] !== null &&
+//         !product[key].ten_loai_mh
+//           .toLowerCase()
+//           .includes(options[key].toLowerCase())
+//       ) {
+//         match = false;
+//         break;
+//       } else if (
+//         key === "gia_min" &&
+//         (product.khuyen_mai
+//           ? product.khuyen_mai.gia_sau_khi_giam
+//           : product.thay_doi_gia.gia_dang_ap_dung) < options.gia_min
+//       ) {
+//         match = false;
+//         break;
+//       } else if (
+//         key === "gia_max" &&
+//         (product.khuyen_mai
+//           ? product.khuyen_mai.gia_sau_khi_giam
+//           : product.thay_doi_gia.gia_dang_ap_dung) > options.gia_max
+//       ) {
+//         match = false;
+//         break;
+//       }
+//     }
+//     return match;
+//   });
+// };
