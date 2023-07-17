@@ -27,6 +27,7 @@ exports.findMe = (req, res) => {
       where: { ma_kh: ma_kh },
     })
       .then((data) => {
+        delete data.dataValues.mat_khau;
         const response = { ...data.dataValues, ...decoded };
         res.status(200).send(response);
       })
