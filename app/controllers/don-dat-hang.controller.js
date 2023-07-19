@@ -1,5 +1,10 @@
 const db = require("../models");
 const DonDatHang = db.DonDatHang;
+const CTDonDatHang = db.CTDonDatHang;
+const MatHang = db.MatHang;
+const moment = require("moment");
+require("moment/locale/vi");
+moment.locale("vi");
 
 exports.findAll = (req, res) => {
   DonDatHang.findAll()
@@ -18,20 +23,40 @@ exports.create = (req, res) => {
     });
   }
 
+  const {
+    dia_chi_giao,
+    ho_nguoi_nhan,
+    ten_nguoi_nhan,
+    sdt,
+    ma_kh,
+    cac_mat_hang,
+  } = req.body;
+
   const donDatHang = {
-    ma_kh: req.body.ma_kh,
-    ngay_tao: req.body.ngay_tao,
-    dia_chi_giao: req.body.dia_chi_giao,
-    ho_nguoi_nhan: req.body.ho_nguoi_nhan,
-    ten_nguoi_nhan: req.body.ten_nguoi_nhan,
-    sdt: req.body.sdt,
+    ngay_tao: moment().format("YYYY-MM-DD"),
+    dia_chi_giao: dia_chi_giao,
+    ho_nguoi_nhan: ho_nguoi_nhan,
+    ten_nguoi_nhan: ten_nguoi_nhan,
+    sdt: sdt,
+    ma_kh: ma_kh,
     ma_trang_thai: "CHO_THANH_TOAN",
-    thoi_gian_giao: null,
-    ma_nv_duyet: null,
-    ma_nv_giao_hang: null,
   };
 
   DonDatHang.create(donDatHang)
-    .then((data) => res.json(data))
-    .catch((err) => res.status(500).json(err));
+    .then((data) => {
+      res.json(data);
+      cac_mat_hang.map((product) => {
+        product.ma_don_dat_hang = data.ma_don_dat_hang;
+        CTDonDatHang.create(product);
+        MatHang.update(
+          {
+            so_luong: product.so_luong - product.so_luong_dat,
+          },
+          { where: { ma_mh: product.ma_mh } }
+        );
+      });
+    })
+    .catch((err) => {
+      res.status(500).json(err);
+    });
 };

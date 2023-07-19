@@ -8,7 +8,7 @@ module.exports = (sequelize, Sequelize) => {
         autoIncrement: true,
       },
       ma_mh: {
-        type: Sequelize.DATE,
+        type: Sequelize.STRING,
       },
       ma_don_dat_hang: {
         type: Sequelize.INTEGER,
@@ -19,11 +19,11 @@ module.exports = (sequelize, Sequelize) => {
       so_luong_tra: {
         type: Sequelize.INTEGER,
       },
-      so_luong: {
+      so_luong_dat: {
         type: Sequelize.INTEGER,
       },
-      don_gia: {
-        type: Sequelize.FLOAT,
+      don_gia_dat: {
+        type: Sequelize.INTEGER,
       },
     },
     {
