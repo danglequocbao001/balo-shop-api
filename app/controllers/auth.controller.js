@@ -104,8 +104,6 @@ exports.getCurrentCredential = async (req, res) => {
     const token = customerToken.split(" ");
     const decoded = jwt.verify(token[0], JWT_PRIVATE_KEY);
 
-    console.log(decoded);
-
     res.status(200).send(decoded);
   } else {
     return res.status(401).send({ message: "Unauthorized" });
