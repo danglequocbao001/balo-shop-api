@@ -1,3 +1,4 @@
+const { JWT_PRIVATE_KEY } = require("../helper/constants");
 const db = require("../models");
 const NhanVien = db.NhanVien;
 const KhachHang = db.KhachHang;
@@ -21,7 +22,7 @@ exports.loginStaff = async (req, res) => {
     {
       ma_nv: nhanvien.ma_nv,
       email_nv: nhanvien.email_nv,
-      role_id: 1,
+      role: "staff",
     },
     process.env.JWT_PRIVATE_KEY,
     { expiresIn: "72h" }
@@ -46,7 +47,7 @@ exports.loginCustomer = async (req, res) => {
     {
       ma_kh: khachhang.ma_kh,
       email_kh: khachhang.email_kh,
-      role_id: 2,
+      role: "customer",
     },
     process.env.JWT_PRIVATE_KEY,
     { expiresIn: "72h" }
@@ -95,4 +96,18 @@ exports.signupCustomer = async (req, res) => {
     .catch((err) => {
       res.status(500).send(err.message);
     });
+};
+
+exports.getCurrentCredential = async (req, res) => {
+  if (req.headers && req.headers.authorization) {
+    const customerToken = req.headers.authorization;
+    const token = customerToken.split(" ");
+    const decoded = jwt.verify(token[0], JWT_PRIVATE_KEY);
+
+    console.log(decoded);
+
+    res.status(200).send(decoded);
+  } else {
+    return res.status(401).send({ message: "Unauthorized" });
+  }
 };
