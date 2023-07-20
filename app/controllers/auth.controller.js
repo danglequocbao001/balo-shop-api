@@ -8,7 +8,7 @@ const Op = db.Sequelize.Op;
 exports.loginStaff = async (req, res) => {
   const { email_nv, mat_khau } = req.body;
   const nhanvien = await NhanVien.findOne({
-    where: { [Op.or]: [{ email_nv: email_nv }] },
+    where: { email_nv: email_nv },
   });
   if (!nhanvien) {
     res.status(401).json({ message: "Tài khoản không tồn tại" });
@@ -33,7 +33,7 @@ exports.loginStaff = async (req, res) => {
 exports.loginCustomer = async (req, res) => {
   const { email_kh, mat_khau } = req.body;
   const khachhang = await KhachHang.findOne({
-    where: { [Op.or]: [{ email_kh: email_kh }] },
+    where: { email_kh: email_kh },
   });
   if (!khachhang) {
     res.status(401).json({ message: "Tài khoản không tồn tại" });
