@@ -6,6 +6,9 @@ module.exports = (app) => {
 
   router.get("/", donDatHangController.findAll);
   router.post("/", donDatHangController.create);
+  router.post("/purchase", donDatHangController.purchase);
+  router.get("/success", donDatHangController.success);
+  router.get("/cancelled", donDatHangController.cancelled);
 
   app.use("/api/don-dat-hang", router);
 };

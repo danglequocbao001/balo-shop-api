@@ -1,3 +1,5 @@
+const { CTDonDatHang } = require("../models");
+
 exports.addFieldsListProductsOrder = async (
   resultProducts,
   listProductsOrder
@@ -19,4 +21,23 @@ exports.addFieldsListProductsOrder = async (
 
 exports.checkProductsOrderAmount = async (arr) => {
   return arr.every((obj) => obj.so_luong_dat <= obj.so_luong);
+};
+
+const countTotalPriceDDH = async (ddh) => {
+  return ddh
+    .map((item) => item.so_luong_dat * item.don_gia_dat)
+    .reduce((a, b) => a + b);
+};
+
+exports.addChiTietToDDH = async (listDDH) => {
+  return listDDH.map(async (ddh) => {
+    const CTDDD = await CTDonDatHang.findAll({
+      where: { ma_don_dat_hang: ddh.ma_don_dat_hang },
+      raw: true,
+    });
+    ddh.chi_tiet = CTDDD;
+    ddh.tong_tien =
+      ddh.chi_tiet.length === 0 ? 0 : await countTotalPriceDDH(ddh.chi_tiet);
+    return ddh;
+  });
 };

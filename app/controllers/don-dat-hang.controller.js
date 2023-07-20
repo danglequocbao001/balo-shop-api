@@ -1,6 +1,7 @@
 const {
   addFieldsListProductsOrder,
   checkProductsOrderAmount,
+  addChiTietToDDH,
 } = require("../helper/don-dat-hang.helper");
 const { resultMergedProducts } = require("../helper/mat-hang.helper");
 const db = require("../models");
@@ -9,12 +10,30 @@ const CTDonDatHang = db.CTDonDatHang;
 const MatHang = db.MatHang;
 const moment = require("moment");
 const LoaiMatHang = db.LoaiMatHang;
+const paypal = require("paypal-rest-sdk");
+
+paypal.configure({
+  mode: "sandbox",
+  client_id:
+    "AVcSiMPjqr9Tf43CvhrIuZn1jv7Z9w9RfcteEw1D4EsZIguhGrs4PTRZb8AH09sIsuyTxSBQRd6E1xDn",
+  client_secret:
+    "ECPDBUREUoV_YNBrOYH2FDbfUMB0ePv4QsxcHWK_7GLiVGyh9SH8bRqJS3oH9Y6dD2vaZ7wydDe8i1XK",
+});
+
 require("moment/locale/vi");
 moment.locale("vi");
 
 exports.findAll = (req, res) => {
-  DonDatHang.findAll()
-    .then((data) => res.status(200).send(data))
+  DonDatHang.findAll({
+    raw: true,
+  })
+    .then(async (data) => {
+      await addChiTietToDDH(data).then((iterableArr) => {
+        Promise.all(iterableArr).then((values) => {
+          res.status(200).send(values);
+        });
+      });
+    })
     .catch((err) => {
       res.status(500).send({
         message: err,
@@ -90,4 +109,75 @@ exports.create = async (req, res) => {
       });
     }
   });
+};
+
+exports.purchase = async (req, res) => {
+  var create_payment_json = {
+    intent: "sale",
+    payer: {
+      payment_method: "paypal",
+    },
+    redirect_urls: {
+      return_url: "http://localhost:5000/api/don-dat-hang/success",
+      cancel_url: "http://localhost:5000/api/don-dat-hang/cancelled",
+    },
+    transactions: [
+      {
+        item_list: {
+          items: [
+            {
+              name: "item",
+              sku: "item",
+              price: "1.00",
+              currency: "USD",
+              quantity: 1,
+            },
+          ],
+        },
+        amount: {
+          currency: "USD",
+          total: "1.00",
+        },
+        description: "This is the payment description.",
+      },
+    ],
+  };
+  paypal.payment.create(create_payment_json, function (error, payment) {
+    if (error) {
+      throw error;
+    } else {
+      console.log("Create Payment Response");
+      console.log(payment);
+      for (let item of payment.links) {
+        if (item.rel === "approval_url") {
+          res.send(item.href);
+        }
+      }
+    }
+  });
+};
+
+exports.success = async (req, res) => {
+  const paymentId = req.query.paymentId;
+  const payerId = { payer_id: req.query.PayerID };
+
+  paypal.payment.execute(paymentId, payerId, function (error, payment) {
+    if (error) {
+      console.error(error);
+    } else {
+      if (payment.state === "approved") {
+        res.send("payment completed successfully");
+        console.log(payment);
+      } else {
+        res.send("payment not successful");
+      }
+    }
+  });
+};
+
+exports.cancelled = async (req, res) => {
+  const payerId = req.query.payerId;
+  const paymentId = req.query.paymentId;
+
+  res.send("Cancelled");
 };

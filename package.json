@@ -26,6 +26,7 @@
     "jsonwebtoken": "^9.0.0",
     "moment": "^2.29.4",
     "nodemon": "^2.0.22",
+    "paypal-rest-sdk": "^1.8.1",
     "sequelize": "^6.28.0",
     "tedious": "^15.1.2"
   }
