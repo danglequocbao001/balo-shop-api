@@ -3,6 +3,7 @@ const { addMaBpToNhanVien } = require("../helper/nhan-vien.helper");
 const db = require("../models");
 const NhanVien = db.NhanVien;
 const BoPhanNhanVien = db.BoPhanNhanVien;
+const BoPhan = db.BoPhan;
 const jwt = require("jsonwebtoken");
 
 exports.findAll = (req, res) => {
@@ -28,9 +29,16 @@ exports.findMe = (req, res) => {
       raw: true,
     }).then((boPhanNhanVien) => {
       NhanVien.findOne({ ma_nv: ma_nv })
-        .then((data) => {
+        .then(async (data) => {
+          const boPhan = await BoPhan.findAll({
+            raw: true,
+          });
+
           const response = { ...data.dataValues, ...decoded };
-          res.status(200).send(addMaBpToNhanVien(response, boPhanNhanVien));
+
+          res
+            .status(200)
+            .send(addMaBpToNhanVien(response, boPhanNhanVien, boPhan));
         })
         .catch((err) => {
           res.status(500).send({
