@@ -72,7 +72,6 @@ exports.create = (req, res) => {
     dia_chi: req.body.dia_chi,
     luong: req.body.luong,
     mat_khau: req.body.mat_khau,
-    // phone_number: req.body.phone_number,
   };
   NhanVien.create(nhanVien)
     .then((data) => res.json(data))
