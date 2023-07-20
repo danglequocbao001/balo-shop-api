@@ -31,27 +31,52 @@ exports.findAll = (req, res) => {
     const customerToken = req.headers.authorization;
     const token = customerToken.split(" ");
     const decoded = jwt.verify(token[0], JWT_PRIVATE_KEY);
+
+    const ma_nv = decoded.ma_nv;
     const ma_kh = decoded.ma_kh;
-    DonDatHang.findAll({
-      where: { ma_kh: ma_kh },
-      raw: true,
-    })
-      .then(async (data) => {
-        await addChiTietToDDH(data).then((iterableArr) => {
-          Promise.all(iterableArr).then((values) => {
-            res
-              .status(200)
-              .send(
-                values.sort((a, b) => b.ma_don_dat_hang - a.ma_don_dat_hang)
-              );
+
+    if (ma_kh) {
+      DonDatHang.findAll({
+        where: { ma_kh: ma_kh },
+        raw: true,
+      })
+        .then(async (data) => {
+          await addChiTietToDDH(data).then((iterableArr) => {
+            Promise.all(iterableArr).then((values) => {
+              res
+                .status(200)
+                .send(
+                  values.sort((a, b) => b.ma_don_dat_hang - a.ma_don_dat_hang)
+                );
+            });
+          });
+        })
+        .catch((err) => {
+          res.status(500).send({
+            message: err.message,
           });
         });
+    } else if (ma_nv) {
+      DonDatHang.findAll({
+        raw: true,
       })
-      .catch((err) => {
-        res.status(500).send({
-          message: err,
+        .then(async (data) => {
+          await addChiTietToDDH(data).then((iterableArr) => {
+            Promise.all(iterableArr).then((values) => {
+              res
+                .status(200)
+                .send(
+                  values.sort((a, b) => b.ma_don_dat_hang - a.ma_don_dat_hang)
+                );
+            });
+          });
+        })
+        .catch((err) => {
+          res.status(500).send({
+            message: err.message,
+          });
         });
-      });
+    }
   } else {
     return res.status(401).send({ message: "Unauthorized" });
   }
@@ -60,10 +85,6 @@ exports.findAll = (req, res) => {
 exports.findOne = (req, res) => {
   const ma_don_dat_hang = req.params.ma_don_dat_hang;
   if (req.headers && req.headers.authorization) {
-    const customerToken = req.headers.authorization;
-    const token = customerToken.split(" ");
-    const decoded = jwt.verify(token[0], JWT_PRIVATE_KEY);
-    const ma_kh = decoded.ma_kh;
     DonDatHang.findAll({
       raw: true,
     })
