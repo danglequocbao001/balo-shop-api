@@ -6,8 +6,8 @@ module.exports = (app) => {
 
   router.get("/", donDatHangController.findAll);
   router.post("/", donDatHangController.create);
-  router.post("/purchase/:tong_tien", donDatHangController.purchase);
-  router.get("/success", donDatHangController.success);
+  router.post("/purchase", donDatHangController.purchase);
+  router.get("/success/:ma_don_dat_hang", donDatHangController.success);
   router.get("/cancelled", donDatHangController.cancelled);
   router.get("/find-one/:ma_don_dat_hang", donDatHangController.findOne);
 

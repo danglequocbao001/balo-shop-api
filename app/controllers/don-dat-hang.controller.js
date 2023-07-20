@@ -13,6 +13,7 @@ const LoaiMatHang = db.LoaiMatHang;
 const paypal = require("paypal-rest-sdk");
 const jwt = require("jsonwebtoken");
 const { JWT_PRIVATE_KEY } = require("../helper/constants");
+const CC = require("currency-converter-lt");
 
 paypal.configure({
   mode: "sandbox",
@@ -69,7 +70,6 @@ exports.findOne = (req, res) => {
       .then(async (data) => {
         await addChiTietToDDH(data).then((iterableArr) => {
           Promise.all(iterableArr).then((values) => {
-            console.log(values);
             res
               .status(200)
               .send(
@@ -81,7 +81,6 @@ exports.findOne = (req, res) => {
         });
       })
       .catch((err) => {
-        console.log(err);
         res.status(500).send({
           message: err,
         });
@@ -162,74 +161,84 @@ exports.create = async (req, res) => {
 };
 
 exports.purchase = async (req, res) => {
-  const tong_tien = req.params.tong_tien;
-  console.log(tong_tien);
-  // var create_payment_json = {
-  //   intent: "sale",
-  //   payer: {
-  //     payment_method: "paypal",
-  //   },
-  //   redirect_urls: {
-  //     return_url: "http://localhost:5000/api/don-dat-hang/success",
-  //     cancel_url: "http://localhost:5000/api/don-dat-hang/cancelled",
-  //   },
-  //   transactions: [
-  //     {
-  //       item_list: {
-  //         items: [
-  //           {
-  //             name: "item",
-  //             sku: "item",
-  //             price: "1.00",
-  //             currency: "USD",
-  //             quantity: 1,
-  //           },
-  //         ],
-  //       },
-  //       amount: {
-  //         currency: "USD",
-  //         total: "1.00",
-  //       },
-  //       description: "This is the payment description.",
-  //     },
-  //   ],
-  // };
-  // paypal.payment.create(create_payment_json, function (error, payment) {
-  //   if (error) {
-  //     throw error;
-  //   } else {
-  //     console.log("Create Payment Response");
-  //     console.log(payment);
-  //     for (let item of payment.links) {
-  //       if (item.rel === "approval_url") {
-  //         res.send(item.href);
-  //       }
-  //     }
-  //   }
-  // });
+  const tong_tien = req.body.tong_tien;
+  const ma_don_dat_hang = req.body.ma_don_dat_hang;
+  let currencyConverter = new CC({
+    from: "VND",
+    to: "USD",
+    amount: parseInt(tong_tien),
+  });
+  currencyConverter.convert().then((moneyUSD) => {
+    var create_payment_json = {
+      intent: "sale",
+      payer: {
+        payment_method: "paypal",
+      },
+      redirect_urls: {
+        return_url: `http://localhost:5000/api/don-dat-hang/success/${ma_don_dat_hang}`,
+        cancel_url: "http://localhost:5000/api/don-dat-hang/cancelled",
+      },
+      transactions: [
+        {
+          item_list: {
+            items: [
+              {
+                name: "Thanh toán mặt hàng",
+                sku: "Thanh toán mặt hàng",
+                price: moneyUSD.toString(),
+                currency: "USD",
+                quantity: 1,
+              },
+            ],
+          },
+          amount: {
+            currency: "USD",
+            total: moneyUSD.toString(),
+          },
+          description: "Thanh toán đơn hàng",
+        },
+      ],
+    };
+    paypal.payment.create(create_payment_json, function (error, payment) {
+      if (error) {
+        throw error;
+      } else {
+        for (let item of payment.links) {
+          if (item.rel === "approval_url") {
+            res.send(item.href);
+          }
+        }
+      }
+    });
+  });
 };
 
 exports.success = async (req, res) => {
   const paymentId = req.query.paymentId;
   const payerId = { payer_id: req.query.PayerID };
+  const ma_don_dat_hang = req.params.ma_don_dat_hang;
 
   paypal.payment.execute(paymentId, payerId, function (error, payment) {
     if (error) {
       console.error(error);
     } else {
       if (payment.state === "approved") {
-        res.send("payment completed successfully");
-        console.log(payment);
+        DonDatHang.update(
+          {
+            ma_trang_thai: "CHO_DUYET",
+          },
+          { where: { ma_don_dat_hang: ma_don_dat_hang } }
+        );
+        res.send("Thanh toán thành công!");
       } else {
-        res.send("payment not successful");
+        res.send("Thanh toán thất bại!");
       }
     }
   });
 };
 
 exports.cancelled = async (req, res) => {
-  const payerId = req.query.payerId;
-  const paymentId = req.query.paymentId;
-
-  res.send("Cancelled");
+  res.send(
+    "Đã dừng thanh toán, hãy tiếp tục thanh toán để nhân viên có thể duyệt đơn hàng!"
+  );
 };
