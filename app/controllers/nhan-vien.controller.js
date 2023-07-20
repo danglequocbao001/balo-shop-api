@@ -1,6 +1,8 @@
 const { JWT_PRIVATE_KEY } = require("../helper/constants");
+const { addMaBpToNhanVien } = require("../helper/nhan-vien.helper");
 const db = require("../models");
 const NhanVien = db.NhanVien;
+const BoPhanNhanVien = db.BoPhanNhanVien;
 const jwt = require("jsonwebtoken");
 
 exports.findAll = (req, res) => {
@@ -22,16 +24,20 @@ exports.findMe = (req, res) => {
     const decoded = jwt.verify(token[0], JWT_PRIVATE_KEY);
     const ma_nv = decoded.ma_nv;
 
-    NhanVien.findOne({ ma_nv: ma_nv })
-      .then((data) => {
-        const response = { ...data.dataValues, ...decoded };
-        res.status(200).send(response);
-      })
-      .catch((err) => {
-        res.status(500).send({
-          message: err,
+    BoPhanNhanVien.findAll({
+      raw: true,
+    }).then((boPhanNhanVien) => {
+      NhanVien.findOne({ ma_nv: ma_nv })
+        .then((data) => {
+          const response = { ...data.dataValues, ...decoded };
+          res.status(200).send(addMaBpToNhanVien(response, boPhanNhanVien));
+        })
+        .catch((err) => {
+          res.status(500).send({
+            message: err,
+          });
         });
-      });
+    });
   } else {
     return res.status(401).send({ message: "Unauthorized" });
   }
