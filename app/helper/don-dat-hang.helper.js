@@ -1,4 +1,4 @@
-const { CTDonDatHang, MatHang } = require("../models");
+const { CTDonDatHang, MatHang, TrangThaiDDH } = require("../models");
 
 exports.addFieldsListProductsOrder = async (
   resultProducts,
@@ -57,11 +57,16 @@ exports.addChiTietToDDH = async (listDDH) => {
       raw: true,
     });
 
+    const trangThai = await TrangThaiDDH.findOne({
+      where: { ma_trang_thai: ddh.ma_trang_thai },
+    });
+
     const chiTiet = await addFieldsProduct(CTDDD);
 
     ddh.chi_tiet = chiTiet;
     ddh.tong_tien =
       ddh.chi_tiet.length === 0 ? 0 : await countTotalPriceDDH(ddh.chi_tiet);
+    ddh.ten_trang_thai = trangThai.ten_trang_thai;
     return ddh;
   });
 };

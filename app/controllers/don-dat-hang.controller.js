@@ -11,6 +11,8 @@ const MatHang = db.MatHang;
 const moment = require("moment");
 const LoaiMatHang = db.LoaiMatHang;
 const paypal = require("paypal-rest-sdk");
+const jwt = require("jsonwebtoken");
+const { JWT_PRIVATE_KEY } = require("../helper/constants");
 
 paypal.configure({
   mode: "sandbox",
@@ -24,21 +26,30 @@ require("moment/locale/vi");
 moment.locale("vi");
 
 exports.findAll = (req, res) => {
-  DonDatHang.findAll({
-    raw: true,
-  })
-    .then(async (data) => {
-      await addChiTietToDDH(data).then((iterableArr) => {
-        Promise.all(iterableArr).then((values) => {
-          res.status(200).send(values);
+  if (req.headers && req.headers.authorization) {
+    const customerToken = req.headers.authorization;
+    const token = customerToken.split(" ");
+    const decoded = jwt.verify(token[0], JWT_PRIVATE_KEY);
+    const ma_kh = decoded.ma_kh;
+    DonDatHang.findAll({
+      where: { ma_kh: ma_kh },
+      raw: true,
+    })
+      .then(async (data) => {
+        await addChiTietToDDH(data).then((iterableArr) => {
+          Promise.all(iterableArr).then((values) => {
+            res.status(200).send(values);
+          });
+        });
+      })
+      .catch((err) => {
+        res.status(500).send({
+          message: err,
         });
       });
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err,
-      });
-    });
+  } else {
+    return res.status(401).send({ message: "Unauthorized" });
+  }
 };
 
 exports.create = async (req, res) => {
