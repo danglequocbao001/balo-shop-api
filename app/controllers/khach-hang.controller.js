@@ -1,7 +1,6 @@
 const { JWT_PRIVATE_KEY } = require("../helper/constants");
 const db = require("../models");
 const KhachHang = db.KhachHang;
-const Op = db.Sequelize.Op;
 const jwt = require("jsonwebtoken");
 
 exports.findAll = (req, res) => {

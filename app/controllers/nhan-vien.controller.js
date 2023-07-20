@@ -1,5 +1,7 @@
+const { JWT_PRIVATE_KEY } = require("../helper/constants");
 const db = require("../models");
 const NhanVien = db.NhanVien;
+const jwt = require("jsonwebtoken");
 
 exports.findAll = (req, res) => {
   NhanVien.findAll()
