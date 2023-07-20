@@ -1,4 +1,4 @@
-const { CTDonDatHang } = require("../models");
+const { CTDonDatHang, MatHang } = require("../models");
 
 exports.addFieldsListProductsOrder = async (
   resultProducts,
@@ -29,13 +29,37 @@ const countTotalPriceDDH = async (ddh) => {
     .reduce((a, b) => a + b);
 };
 
+const addFieldsProduct = async (CTDDD) => {
+  const result = CTDDD.map(async (item) => {
+    const matHang = await MatHang.findOne({
+      where: { ma_mh: item.ma_mh },
+      raw: true,
+    });
+
+    const mat_hang = {
+      ma_mh: matHang.ma_mh,
+      ten_mh: matHang.ten_mh,
+      hinh_anh: matHang.hinh_anh,
+    };
+
+    item = { ...item, mat_hang };
+    return item;
+  });
+  return Promise.all(result).then((values) => {
+    return values;
+  });
+};
+
 exports.addChiTietToDDH = async (listDDH) => {
   return listDDH.map(async (ddh) => {
     const CTDDD = await CTDonDatHang.findAll({
       where: { ma_don_dat_hang: ddh.ma_don_dat_hang },
       raw: true,
     });
-    ddh.chi_tiet = CTDDD;
+
+    const chiTiet = await addFieldsProduct(CTDDD);
+
+    ddh.chi_tiet = chiTiet;
     ddh.tong_tien =
       ddh.chi_tiet.length === 0 ? 0 : await countTotalPriceDDH(ddh.chi_tiet);
     return ddh;
