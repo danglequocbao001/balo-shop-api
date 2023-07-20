@@ -6,9 +6,10 @@ module.exports = (app) => {
 
   router.get("/", donDatHangController.findAll);
   router.post("/", donDatHangController.create);
-  router.post("/purchase", donDatHangController.purchase);
+  router.post("/purchase/:tong_tien", donDatHangController.purchase);
   router.get("/success", donDatHangController.success);
   router.get("/cancelled", donDatHangController.cancelled);
+  router.get("/find-one/:ma_don_dat_hang", donDatHangController.findOne);
 
   app.use("/api/don-dat-hang", router);
 };

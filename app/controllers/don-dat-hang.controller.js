@@ -38,11 +38,50 @@ exports.findAll = (req, res) => {
       .then(async (data) => {
         await addChiTietToDDH(data).then((iterableArr) => {
           Promise.all(iterableArr).then((values) => {
-            res.status(200).send(values);
+            res
+              .status(200)
+              .send(
+                values.sort((a, b) => b.ma_don_dat_hang - a.ma_don_dat_hang)
+              );
           });
         });
       })
       .catch((err) => {
+        res.status(500).send({
+          message: err,
+        });
+      });
+  } else {
+    return res.status(401).send({ message: "Unauthorized" });
+  }
+};
+
+exports.findOne = (req, res) => {
+  const ma_don_dat_hang = req.params.ma_don_dat_hang;
+  if (req.headers && req.headers.authorization) {
+    const customerToken = req.headers.authorization;
+    const token = customerToken.split(" ");
+    const decoded = jwt.verify(token[0], JWT_PRIVATE_KEY);
+    const ma_kh = decoded.ma_kh;
+    DonDatHang.findAll({
+      raw: true,
+    })
+      .then(async (data) => {
+        await addChiTietToDDH(data).then((iterableArr) => {
+          Promise.all(iterableArr).then((values) => {
+            console.log(values);
+            res
+              .status(200)
+              .send(
+                values.filter(
+                  (item) => item.ma_don_dat_hang === parseInt(ma_don_dat_hang)
+                )
+              );
+          });
+        });
+      })
+      .catch((err) => {
+        console.log(err);
         res.status(500).send({
           message: err,
         });
@@ -123,49 +162,51 @@ exports.create = async (req, res) => {
 };
 
 exports.purchase = async (req, res) => {
-  var create_payment_json = {
-    intent: "sale",
-    payer: {
-      payment_method: "paypal",
-    },
-    redirect_urls: {
-      return_url: "http://localhost:5000/api/don-dat-hang/success",
-      cancel_url: "http://localhost:5000/api/don-dat-hang/cancelled",
-    },
-    transactions: [
-      {
-        item_list: {
-          items: [
-            {
-              name: "item",
-              sku: "item",
-              price: "1.00",
-              currency: "USD",
-              quantity: 1,
-            },
-          ],
-        },
-        amount: {
-          currency: "USD",
-          total: "1.00",
-        },
-        description: "This is the payment description.",
-      },
-    ],
-  };
-  paypal.payment.create(create_payment_json, function (error, payment) {
-    if (error) {
-      throw error;
-    } else {
-      console.log("Create Payment Response");
-      console.log(payment);
-      for (let item of payment.links) {
-        if (item.rel === "approval_url") {
-          res.send(item.href);
-        }
-      }
-    }
-  });
+  const tong_tien = req.params.tong_tien;
+  console.log(tong_tien);
+  // var create_payment_json = {
+  //   intent: "sale",
+  //   payer: {
+  //     payment_method: "paypal",
+  //   },
+  //   redirect_urls: {
+  //     return_url: "http://localhost:5000/api/don-dat-hang/success",
+  //     cancel_url: "http://localhost:5000/api/don-dat-hang/cancelled",
+  //   },
+  //   transactions: [
+  //     {
+  //       item_list: {
+  //         items: [
+  //           {
+  //             name: "item",
+  //             sku: "item",
+  //             price: "1.00",
+  //             currency: "USD",
+  //             quantity: 1,
+  //           },
+  //         ],
+  //       },
+  //       amount: {
+  //         currency: "USD",
+  //         total: "1.00",
+  //       },
+  //       description: "This is the payment description.",
+  //     },
+  //   ],
+  // };
+  // paypal.payment.create(create_payment_json, function (error, payment) {
+  //   if (error) {
+  //     throw error;
+  //   } else {
+  //     console.log("Create Payment Response");
+  //     console.log(payment);
+  //     for (let item of payment.links) {
+  //       if (item.rel === "approval_url") {
+  //         res.send(item.href);
+  //       }
+  //     }
+  //   }
+  // });
 };
 
 exports.success = async (req, res) => {
