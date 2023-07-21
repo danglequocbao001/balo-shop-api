@@ -8,7 +8,6 @@ const db = require("../models");
 const DonDatHang = db.DonDatHang;
 const CTDonDatHang = db.CTDonDatHang;
 const MatHang = db.MatHang;
-const NhanVien = db.NhanVien;
 const moment = require("moment");
 const LoaiMatHang = db.LoaiMatHang;
 const paypal = require("paypal-rest-sdk");
