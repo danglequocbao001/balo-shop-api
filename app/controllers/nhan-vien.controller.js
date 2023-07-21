@@ -1,5 +1,8 @@
 const { JWT_PRIVATE_KEY } = require("../helper/constants");
-const { addMaBpToNhanVien } = require("../helper/nhan-vien.helper");
+const {
+  addMaBpToNhanVien,
+  addBoPhanField,
+} = require("../helper/nhan-vien.helper");
 const db = require("../models");
 const NhanVien = db.NhanVien;
 const BoPhanNhanVien = db.BoPhanNhanVien;
@@ -7,9 +10,16 @@ const BoPhan = db.BoPhan;
 const jwt = require("jsonwebtoken");
 
 exports.findAll = (req, res) => {
-  NhanVien.findAll()
-    .then((data) => {
-      res.status(200).send(data);
+  NhanVien.findAll({
+    raw: true,
+  })
+    .then(async (nhanVien) => {
+      const boPhannNhanVien = await BoPhanNhanVien.findAll({
+        raw: true,
+      });
+      const result = await addBoPhanField(boPhannNhanVien, nhanVien);
+
+      res.status(200).send(result);
     })
     .catch((err) => {
       res.status(500).send({

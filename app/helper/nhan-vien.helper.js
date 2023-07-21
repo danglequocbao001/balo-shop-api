@@ -11,3 +11,15 @@ exports.addMaBpToNhanVien = (nhanVienObj, boPhanNhanVien, boPhan) => {
   }
   return nhanVienObj;
 };
+
+exports.addBoPhanField = async (boPhanNhanVien, nhanVien) => {
+  return nhanVien.map((secondObj) => {
+    const firstObj = boPhanNhanVien.find(
+      (firstObj) => firstObj.ma_nv === secondObj.ma_nv
+    );
+    if (firstObj) {
+      return { ...secondObj, bo_phan: firstObj };
+    }
+    return secondObj;
+  });
+};
