@@ -34,7 +34,6 @@ exports.findMe = (req, res) => {
     const token = staffToken.split(" ");
     const decoded = jwt.verify(token[0], JWT_PRIVATE_KEY);
     const ma_nv = decoded.ma_nv;
-    console.log("fucker", ma_nv);
 
     BoPhanNhanVien.findAll({
       raw: true,

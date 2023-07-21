@@ -1,6 +1,5 @@
 const db = require("../models");
 const LoaiMatHang = db.LoaiMatHang;
-const Op = db.Sequelize.Op;
 
 exports.findAll = (req, res) => {
   LoaiMatHang.findAll()
