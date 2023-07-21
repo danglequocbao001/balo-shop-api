@@ -4,6 +4,7 @@ module.exports = (app) => {
 
   router.get("/:ma_mh", binhLuanController.findAll);
   router.post("/", binhLuanController.create);
+  router.delete("/:ma_binh_luan", binhLuanController.delete);
 
   app.use("/api/binh-luan", router);
 };
