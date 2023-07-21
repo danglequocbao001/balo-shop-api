@@ -11,11 +11,23 @@ exports.findAll = (req, res) => {
   })
     .then(async (binhLuan) => {
       const result = await addCusToComment(binhLuan);
-      res.status(200).send(result);
+      res
+        .status(200)
+        .send(result.sort((a, b) => b.ma_binh_luan - a.ma_binh_luan));
     })
     .catch((err) => {
       res.status(500).send({
         message: err,
       });
+    });
+};
+
+exports.create = (req, res) => {
+  BinhLuan.create(req.body)
+    .then((data) => {
+      res.status(200).send(data);
+    })
+    .catch((err) => {
+      res.status(500).send(err.message);
     });
 };
