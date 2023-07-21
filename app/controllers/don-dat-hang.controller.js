@@ -282,3 +282,19 @@ exports.browse = (req, res) => {
     })
     .catch((err) => res.status(500).json(err));
 };
+
+exports.delivered = (req, res) => {
+  const ma_don_dat_hang = req.params.ma_don_dat_hang;
+  const thoi_gian_giao = moment().format("YYYY-MM-DD");
+  DonDatHang.update(
+    {
+      thoi_gian_giao: thoi_gian_giao,
+      ma_trang_thai: "DA_HOAN_THANH",
+    },
+    { where: { ma_don_dat_hang: ma_don_dat_hang } }
+  )
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => res.status(500).json(err.message));
+};

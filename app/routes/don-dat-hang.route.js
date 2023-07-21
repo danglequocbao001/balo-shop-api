@@ -11,6 +11,7 @@ module.exports = (app) => {
   router.get("/cancelled", donDatHangController.cancelled);
   router.get("/find-one/:ma_don_dat_hang", donDatHangController.findOne);
   router.post("/browse", donDatHangController.browse);
+  router.post("/delivered/:ma_don_dat_hang", donDatHangController.delivered);
 
   app.use("/api/don-dat-hang", router);
 };
