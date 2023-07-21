@@ -3,7 +3,6 @@ const db = require("../models");
 const NhanVien = db.NhanVien;
 const KhachHang = db.KhachHang;
 const jwt = require("jsonwebtoken");
-const Op = db.Sequelize.Op;
 
 exports.loginStaff = async (req, res) => {
   const { email_nv, mat_khau } = req.body;
