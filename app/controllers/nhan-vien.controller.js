@@ -34,21 +34,23 @@ exports.findMe = (req, res) => {
     const token = staffToken.split(" ");
     const decoded = jwt.verify(token[0], JWT_PRIVATE_KEY);
     const ma_nv = decoded.ma_nv;
+    console.log("fucker", ma_nv);
 
     BoPhanNhanVien.findAll({
       raw: true,
     }).then((boPhanNhanVien) => {
-      NhanVien.findOne({ ma_nv: ma_nv })
-        .then(async (data) => {
+      NhanVien.findOne({ where: { ma_nv: ma_nv } })
+        .then(async (nhanVien) => {
+          delete nhanVien.dataValues.mat_khau;
+          delete nhanVien.dataValues.luong;
           const boPhan = await BoPhan.findAll({
             raw: true,
           });
+          const response = { ...nhanVien.dataValues, ...decoded };
 
-          const response = { ...data.dataValues, ...decoded };
+          const result = addMaBpToNhanVien(response, boPhanNhanVien, boPhan);
 
-          res
-            .status(200)
-            .send(addMaBpToNhanVien(response, boPhanNhanVien, boPhan));
+          res.status(200).send(result);
         })
         .catch((err) => {
           res.status(500).send({
