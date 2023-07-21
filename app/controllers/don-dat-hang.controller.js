@@ -8,6 +8,7 @@ const db = require("../models");
 const DonDatHang = db.DonDatHang;
 const CTDonDatHang = db.CTDonDatHang;
 const MatHang = db.MatHang;
+const NhanVien = db.NhanVien;
 const moment = require("moment");
 const LoaiMatHang = db.LoaiMatHang;
 const paypal = require("paypal-rest-sdk");
@@ -158,7 +159,6 @@ exports.create = async (req, res) => {
 
       DonDatHang.create(donDatHang)
         .then((data) => {
-          res.json(data);
           cac_mat_hang_processed.map((product) => {
             product.ma_don_dat_hang = data.ma_don_dat_hang;
             CTDonDatHang.create(product);
@@ -169,6 +169,7 @@ exports.create = async (req, res) => {
               { where: { ma_mh: product.ma_mh } }
             );
           });
+          res.status(200).json(data);
         })
         .catch((err) => {
           res.status(500).json(err);
@@ -262,4 +263,23 @@ exports.cancelled = async (req, res) => {
   res.send(
     "Đã dừng thanh toán, hãy tiếp tục thanh toán để nhân viên có thể duyệt đơn hàng!"
   );
+};
+
+exports.browse = (req, res) => {
+  const ma_don_dat_hang = req.body.ma_don_dat_hang;
+  const ma_nv_duyet = req.body.ma_nv_duyet;
+  const ma_nv_giao_hang = req.body.ma_nv_giao_hang;
+
+  DonDatHang.update(
+    {
+      ma_nv_duyet: ma_nv_duyet,
+      ma_nv_giao_hang: ma_nv_giao_hang,
+      ma_trang_thai: "CHO_GIAO_HANG",
+    },
+    { where: { ma_don_dat_hang: ma_don_dat_hang } }
+  )
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => res.status(500).json(err));
 };
