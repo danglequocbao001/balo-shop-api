@@ -29,17 +29,6 @@ exports.findAll = (req, res) => {
 };
 
 exports.search = (req, res) => {
-  const { ten_mh, nha_san_xuat, mo_ta, gia_min, gia_max, ten_loai_mh } =
-    req.body;
-  const options = {
-    ten_mh: ten_mh,
-    nha_san_xuat: nha_san_xuat,
-    mo_ta: mo_ta,
-    gia_min: gia_min,
-    gia_max: gia_max,
-    ten_loai_mh: ten_loai_mh,
-  };
-
   MatHang.findAll({
     include: [
       {
@@ -52,7 +41,7 @@ exports.search = (req, res) => {
     .then(async (allProducts) => {
       const resultProducts = await resultMergedProducts(allProducts);
 
-      const resultSearched = await searchProducts(resultProducts, options);
+      const resultSearched = await searchProducts(resultProducts, req.body);
 
       res.status(200).send(resultSearched);
     })
