@@ -206,7 +206,7 @@ exports.purchase = async (req, res) => {
               {
                 name: "Thanh toán mặt hàng",
                 sku: "Thanh toán mặt hàng",
-                price: moneyUSD.toString(),
+                price: moneyUSD.toFixed(2).toString(),
                 currency: "USD",
                 quantity: 1,
               },
@@ -214,7 +214,7 @@ exports.purchase = async (req, res) => {
           },
           amount: {
             currency: "USD",
-            total: moneyUSD.toString(),
+            total: moneyUSD.toFixed(2).toString(),
           },
           description: "Thanh toán đơn hàng",
         },
