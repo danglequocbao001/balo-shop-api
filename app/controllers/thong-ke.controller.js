@@ -1,4 +1,5 @@
 const sequelizeManual = require("../helper/sequelize");
+const { groupDataByDate } = require("../helper/thong-ke.helper");
 
 exports.findAll = (req, res) => {
   sequelizeManual
@@ -9,8 +10,9 @@ exports.findAll = (req, res) => {
       },
       type: sequelizeManual.QueryTypes.SELECT,
     })
-    .then((data) => {
-      res.status(200).send(data);
+    .then(async (data) => {
+      const result = await groupDataByDate(data, req.body.type);
+      res.status(200).send(result);
     })
     .catch((err) => {
       res.status(500).send({
