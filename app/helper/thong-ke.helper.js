@@ -22,10 +22,10 @@ exports.groupDataByDate = async (data, type) => {
     }
     if (!groups[name]) {
       groups[name] = { sum: 0 };
-      result.push({ name, tong_tien: 0 });
+      result.push({ name, tong_thu: 0 });
     }
-    groups[name].sum += item.tong_tien;
-    result.find((obj) => obj.name === name).tong_tien = groups[name].sum;
+    groups[name].sum += item.tong_thu;
+    result.find((obj) => obj.name === name).tong_thu = groups[name].sum;
   });
   return result;
 };
