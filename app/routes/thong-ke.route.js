@@ -4,7 +4,7 @@ module.exports = (app) => {
   const thongKeController = require("../controllers/thong-ke.controller");
   var router = require("express").Router();
 
-  router.post("/", thongKeController.findAll);
+  router.post("/", roleRequireAdmin, thongKeController.findAll);
 
   app.use("/api/thong-ke", router);
 };

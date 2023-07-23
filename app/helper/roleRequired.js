@@ -7,7 +7,7 @@ const roleRequireCustomer = (req, res, next) => {
       res.status(403).json({ message: "Tài khoản không có quyền truy cập" });
     } else {
       req.user = user;
-      if (req.user.role_id != 2)
+      if (req.user.role !== "customer")
         res.status(403).json({ message: "Tài khoản không có quyền truy cập" });
       next();
     }
@@ -21,7 +21,7 @@ const roleRequireAdmin = (req, res, next) => {
       res.status(403).json({ message: "Tài khoản không có quyền truy cập" });
     } else {
       req.user = user;
-      if (req.user.role_id != 1)
+      if (req.user.role !== "staff")
         res.status(403).json({ message: "Tài khoản không có quyền truy cập" });
       next();
     }
