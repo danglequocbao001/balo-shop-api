@@ -29,6 +29,9 @@ module.exports = (sequelize, Sequelize) => {
       is_new: {
         type: Sequelize.INTEGER,
       },
+      is_active: {
+        type: Sequelize.INTEGER,
+      },
       ma_loai_mh: {
         type: Sequelize.STRING,
         references: {

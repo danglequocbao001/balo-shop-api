@@ -8,6 +8,7 @@ module.exports = (app) => {
   router.post("/search", matHangController.search);
   router.get("/:ma_mh", matHangController.findOne);
   router.post("/", roleRequireAdmin, matHangController.create);
+  router.put("/", roleRequireAdmin, matHangController.update);
 
   app.use("/api/mat-hang", router);
 };
