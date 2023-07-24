@@ -19,9 +19,7 @@ exports.findAll = (req, res) => {
     .then(async (allProducts) => {
       const resultProducts = await resultMergedProducts(allProducts);
 
-      res
-        .status(200)
-        .send(resultProducts.filter((product) => product.so_luong !== 0));
+      res.status(200).send(resultProducts);
     })
     .catch((err) => {
       res.status(500).send({
