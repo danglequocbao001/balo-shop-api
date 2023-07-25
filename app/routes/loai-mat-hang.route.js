@@ -5,6 +5,8 @@ module.exports = (app) => {
   var router = require("express").Router();
 
   router.get("/", loaiMatHangController.findAll);
+  router.post("/", loaiMatHangController.create);
+  router.put("/", loaiMatHangController.update);
 
   app.use("/api/loai-mat-hang", router);
 };
