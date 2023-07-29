@@ -50,8 +50,23 @@ const addFieldsProduct = async (CTDDD) => {
   });
 };
 
-exports.addChiTietToDDH = async (listDDH) => {
-  return listDDH.map(async (ddh) => {
+const addHoaDonToDonDatHang = async (donDatHangArr, hoaDonArr) => {
+  const result = donDatHangArr.map((donDatHang) => {
+    const hoaDon = hoaDonArr
+      .flat()
+      .find((hoaDon) => hoaDon.ma_don_dat_hang === donDatHang.ma_don_dat_hang);
+    if (hoaDon) {
+      return { ...donDatHang, hoa_don: hoaDon };
+    } else {
+      return donDatHang;
+    }
+  });
+  return result;
+};
+
+exports.addChiTietToDDH = async (listDDH, listHoaDon) => {
+  let donDatHangArr = await addHoaDonToDonDatHang(listDDH, listHoaDon);
+  return donDatHangArr.map(async (ddh) => {
     const CTDDD = await CTDonDatHang.findAll({
       where: { ma_don_dat_hang: ddh.ma_don_dat_hang },
       raw: true,

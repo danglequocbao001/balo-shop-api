@@ -31,6 +31,7 @@ db.CTDonDatHang = require("./ct-don-dat-hang.model.js")(sequelize, Sequelize);
 db.BoPhanNhanVien = require("./bophan-nhanvien.model.js")(sequelize, Sequelize);
 db.BoPhan = require("./bo-phan.model.js")(sequelize, Sequelize);
 db.BinhLuan = require("./binh-luan.model.js")(sequelize, Sequelize);
+db.HoaDon = require("./hoa-don.model.js")(sequelize, Sequelize);
 
 //foreign keys mat_hang(ma_loai_mh)
 db.LoaiMatHang.hasMany(db.MatHang, { foreignKey: "ma_loai_mh" });

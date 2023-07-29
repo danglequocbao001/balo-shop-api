@@ -8,6 +8,7 @@ const db = require("../models");
 const DonDatHang = db.DonDatHang;
 const CTDonDatHang = db.CTDonDatHang;
 const MatHang = db.MatHang;
+const HoaDon = db.HoaDon;
 const moment = require("moment");
 const LoaiMatHang = db.LoaiMatHang;
 const paypal = require("paypal-rest-sdk");
@@ -26,7 +27,7 @@ paypal.configure({
 require("moment/locale/vi");
 moment.locale("vi");
 
-exports.findAll = (req, res) => {
+exports.findAll = async (req, res) => {
   if (req.headers && req.headers.authorization) {
     const customerToken = req.headers.authorization;
     const token = customerToken.split(" ");
@@ -35,13 +36,17 @@ exports.findAll = (req, res) => {
     const ma_nv = decoded.ma_nv;
     const ma_kh = decoded.ma_kh;
 
+    const listHoaDon = await HoaDon.findAll({
+      raw: true,
+    });
+
     if (ma_kh) {
       DonDatHang.findAll({
         where: { ma_kh: ma_kh },
         raw: true,
       })
-        .then(async (data) => {
-          await addChiTietToDDH(data).then((iterableArr) => {
+        .then(async (listDDH) => {
+          await addChiTietToDDH(listDDH, listHoaDon).then((iterableArr) => {
             Promise.all(iterableArr).then((values) => {
               res
                 .status(200)
