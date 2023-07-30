@@ -65,8 +65,8 @@ exports.findAll = async (req, res) => {
       DonDatHang.findAll({
         raw: true,
       })
-        .then(async (data) => {
-          await addChiTietToDDH(data).then((iterableArr) => {
+        .then(async (listDDH) => {
+          await addChiTietToDDH(listDDH, listHoaDon).then((iterableArr) => {
             Promise.all(iterableArr).then((values) => {
               res
                 .status(200)
