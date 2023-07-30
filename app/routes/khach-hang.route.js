@@ -7,6 +7,7 @@ module.exports = (app) => {
   router.get("/find-all", khachHangController.findAll);
   router.get("/find-me", khachHangController.findMe);
   router.get("/find-one/:ma_kh", khachHangController.findOne);
+  router.put("/", khachHangController.update);
 
   app.use("/api/khach-hang", router);
 };

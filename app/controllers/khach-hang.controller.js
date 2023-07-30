@@ -2,6 +2,7 @@ const { JWT_PRIVATE_KEY } = require("../helper/constants");
 const db = require("../models");
 const KhachHang = db.KhachHang;
 const jwt = require("jsonwebtoken");
+const Op = db.Sequelize.Op;
 
 exports.findAll = (req, res) => {
   KhachHang.findAll()
@@ -61,58 +62,58 @@ exports.findOne = (req, res) => {
     });
 };
 
-// exports.updateByUser = async (req, res) => {
-//   if (!req.user) {
-//     res.status(400).send({
-//       message: "User is not logged in!",
-//     });
-//   }
-//   const ma_kh = req.khach_hang.ma_kh;
-//   const { username, email, phone_number } = req.body;
-//   if (!username || !email || !phone_number) {
-//     res.status(401).json({ message: "Invalid credentials" });
-//     return;
-//   }
-//   let checkUsername = await Accounts.findOne({
-//     where: { username: username, account_id: { [Op.ne]: account_id } },
-//   });
-//   if (checkUsername) {
-//     res.status(401).json({ message: "Username already exists" });
-//     return;
-//   }
-//   let checkEmail = await Accounts.findOne({
-//     where: { email: email, account_id: { [Op.ne]: account_id } },
-//   });
-//   if (checkEmail) {
-//     res.status(401).json({ message: "Email already used" });
-//     return;
-//   }
-//   let checkPhoneNumber = await Accounts.findOne({
-//     where: { phone_number: phone_number, account_id: { [Op.ne]: account_id } },
-//   });
-//   if (checkPhoneNumber) {
-//     res.status(401).json({ message: "Phone number already used" });
-//     return;
-//   }
-//   const newAccount = {
-//     username: username,
-//     email: email,
-//     phone_number: phone_number,
-//   };
+exports.update = async (req, res) => {
+  if (req.headers && req.headers.authorization) {
+    const customerToken = req.headers.authorization;
+    const token = customerToken.split(" ");
+    const decoded = jwt.verify(token[0], JWT_PRIVATE_KEY);
+    const ma_kh = decoded.ma_kh;
 
-//   Accounts.update(newAccount, { where: { account_id: account_id } })
-//     .then((num) => {
-//       if (num == 1) {
-//         res.status(200).send({
-//           message: "Account updated successfully!",
-//         });
-//       } else {
-//         res.status(404).send({
-//           message: `Cannot update account with id=${account_id}. Maybe account was not found!`,
-//         });
-//       }
-//     })
-//     .catch((err) => {
-//       res.status(500).send({ message: err });
-//     });
-// };
+    const checkSdtKh = await KhachHang.findOne({
+      where: { sdt: req.body.sdt },
+    });
+
+    const checkSoIdKh = await KhachHang.findOne({
+      where: { so_id: req.body.so_id },
+    });
+
+    if (checkSdtKh !== null && checkSdtKh.ma_kh !== ma_kh) {
+      res
+        .status(400)
+        .json({ message: `Số điện thoại ${req.body.sdt} đã tồn tại` });
+      return;
+    } else if (
+      checkSoIdKh !== null &&
+      (req.body.so_id !== null || req.body.so_id !== "") &&
+      checkSoIdKh.ma_kh !== ma_kh
+    ) {
+      res
+        .status(400)
+        .json({ message: `CMND/CCCD/Id ${req.body.so_id} đã tồn tại"` });
+      return;
+    }
+
+    KhachHang.update(
+      {
+        ho_kh: req.body.ho_kh,
+        ten_kh: req.body.ten_kh,
+        dia_chi: req.body.dia_chi,
+        sdt: req.body.sdt,
+        so_id: req.body.so_id,
+      },
+      {
+        where: { ma_kh: ma_kh },
+      }
+    )
+      .then((data) => {
+        res.status(200).send(data);
+      })
+      .catch((err) => {
+        res.status(500).send({
+          message: err.message,
+        });
+      });
+  } else {
+    return res.status(401).send({ message: "Unauthorized" });
+  }
+};
