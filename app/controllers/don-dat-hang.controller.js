@@ -87,14 +87,17 @@ exports.findAll = async (req, res) => {
   }
 };
 
-exports.findOne = (req, res) => {
+exports.findOne = async (req, res) => {
   const ma_don_dat_hang = req.params.ma_don_dat_hang;
   if (req.headers && req.headers.authorization) {
+    const listHoaDon = await HoaDon.findAll({
+      raw: true,
+    });
     DonDatHang.findAll({
       raw: true,
     })
-      .then(async (data) => {
-        await addChiTietToDDH(data).then((iterableArr) => {
+      .then(async (listDDH) => {
+        await addChiTietToDDH(listDDH, listHoaDon).then((iterableArr) => {
           Promise.all(iterableArr).then((values) => {
             res
               .status(200)
@@ -108,7 +111,7 @@ exports.findOne = (req, res) => {
       })
       .catch((err) => {
         res.status(500).send({
-          message: err,
+          message: err.message,
         });
       });
   } else {
