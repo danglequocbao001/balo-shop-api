@@ -80,6 +80,7 @@ exports.addChiTietToDDH = async (listDDH, listHoaDon) => {
 
     const nhanVien = await NhanVien.findOne({
       where: { ma_nv: ddh.ma_nv_giao_hang },
+      attributes: ["ma_nv", "email_nv", "ho_nv", "ten_nv"],
     });
 
     ddh.chi_tiet = chiTiet;
