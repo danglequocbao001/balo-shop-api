@@ -4,5 +4,5 @@ module.exports = (app) => {
 
   router.post("/", hoaDonController.create);
 
-  app.use("/api/loai-mat-hang", router);
+  app.use("/api/hoa-don", router);
 };
