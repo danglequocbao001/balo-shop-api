@@ -5,3 +5,5 @@ VALUES ('BLDL2', 1, 170000), ('BLDL1', 1, 90000);
 EXEC sp_create_don_dat_hang '2023-07-25', '97 Man Thiện, Phường Hiệp Phú, Thành phố Thủ Đức, Sài Gòn', 'Đặng', 'Bảo', '0359999999', 1, "CHO_THANH_TOAN", @cac_mat_hang;
 
 EXEC sp_thong_ke_doanh_thu '2023-07-15', '2024-07-31';
+
+EXEC thong_ke_doanh_thu_theo_thang '2023-08-01';
