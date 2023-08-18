@@ -3,7 +3,7 @@ const { groupDataByDate } = require("../helper/thong-ke.helper");
 
 exports.findAll = (req, res) => {
   sequelizeManual
-    .query("EXEC sp_thong_ke_doanh_thu :ngay_bat_dau, :ngay_ket_thuc", {
+    .query("EXEC sp_thong_ke_doanh_thu_while :ngay_bat_dau, :ngay_ket_thuc", {
       replacements: {
         ngay_bat_dau: req.body.ngay_bat_dau,
         ngay_ket_thuc: req.body.ngay_ket_thuc,
